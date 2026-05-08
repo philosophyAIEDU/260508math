@@ -17,17 +17,25 @@ try:
 except ImportError:
     OLLAMA_AVAILABLE = False
 
-# ── 한글 폰트 (없으면 기본값) ──────────────────────────────────────────────
+# ── 한글 폰트 ──────────────────────────────────────────────────────────────
 def _set_korean_font():
+    font_manager._load_fontmanager(try_read_cache=False)
     candidates = [
-        "NanumGothic", "Malgun Gothic", "AppleGothic",
-        "NanumBarunGothic", "Gulim",
+        "NanumGothic", "NanumBarunGothic", "NanumMyeongjo",
+        "Malgun Gothic", "AppleGothic", "Gulim",
     ]
     available = {f.name for f in font_manager.fontManager.ttflist}
     for name in candidates:
         if name in available:
             plt.rcParams["font.family"] = name
-            break
+            plt.rcParams["axes.unicode_minus"] = False
+            return
+    import glob
+    nanum_paths = glob.glob("/usr/share/fonts/truetype/nanum/NanumGothic.ttf")
+    if nanum_paths:
+        font_manager.fontManager.addfont(nanum_paths[0])
+        prop = font_manager.FontProperties(fname=nanum_paths[0])
+        plt.rcParams["font.family"] = prop.get_name()
     plt.rcParams["axes.unicode_minus"] = False
 
 _set_korean_font()

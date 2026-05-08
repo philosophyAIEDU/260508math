@@ -18,14 +18,28 @@ from matplotlib import font_manager
 
 # ── 한글 폰트 ────────────────────────────────────────────────────────────────
 def _set_korean_font():
-    candidates = ["NanumGothic", "Malgun Gothic", "AppleGothic",
-                  "NanumBarunGothic", "Gulim", "DejaVu Sans"]
+    # 캐시 삭제 후 재스캔하여 새로 설치된 폰트 인식
+    font_manager._load_fontmanager(try_read_cache=False)
+    candidates = [
+        "NanumGothic", "NanumBarunGothic", "NanumMyeongjo",
+        "Malgun Gothic", "AppleGothic", "Gulim",
+    ]
     available = {f.name for f in font_manager.fontManager.ttflist}
     for name in candidates:
         if name in available:
             plt.rcParams["font.family"] = name
+            plt.rcParams["axes.unicode_minus"] = False
             return name
-    plt.rcParams["font.family"] = "DejaVu Sans"
+    # 폴백: ttf 파일 직접 지정
+    import glob
+    nanum_paths = glob.glob("/usr/share/fonts/truetype/nanum/NanumGothic.ttf")
+    if nanum_paths:
+        font_manager.fontManager.addfont(nanum_paths[0])
+        prop = font_manager.FontProperties(fname=nanum_paths[0])
+        plt.rcParams["font.family"] = prop.get_name()
+        plt.rcParams["axes.unicode_minus"] = False
+        return prop.get_name()
+    plt.rcParams["axes.unicode_minus"] = False
     return "DejaVu Sans"
 
 FONT_NAME = _set_korean_font()

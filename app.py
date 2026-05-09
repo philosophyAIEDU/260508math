@@ -1,5 +1,5 @@
 """
-초등학생도 이해하는 미적분 탐험대
+수포자도 이해하는 미적분 탐험대
 Streamlit + Ollama(gemma4) 기반 스토리텔링 미적분 학습 앱
 """
 
@@ -61,6 +61,7 @@ html, body, [class*="css"] { font-family: 'Noto Sans KR', sans-serif; }
     margin: 12px 0;
     font-size: 1.1rem;
     line-height: 1.8;
+    color: #1a237e;
 }
 .concept-card {
     background: #fff;
@@ -69,6 +70,7 @@ html, body, [class*="css"] { font-family: 'Noto Sans KR', sans-serif; }
     padding: 18px;
     margin: 10px 0;
     box-shadow: 0 4px 12px rgba(76,175,80,.15);
+    color: #333;
 }
 .highlight {
     background:#fff9c4;
@@ -80,7 +82,7 @@ html, body, [class*="css"] { font-family: 'Noto Sans KR', sans-serif; }
 .chapter-title {
     font-size:2rem;
     font-weight:900;
-    color:#1a237e;
+    color:#FFD700; /* Bright Yellow for Visibility */
     margin-bottom:4px;
 }
 .ai-bubble {
@@ -89,6 +91,7 @@ html, body, [class*="css"] { font-family: 'Noto Sans KR', sans-serif; }
     padding:16px 20px;
     margin:10px 0;
     border-left:4px solid #1976D2;
+    color: #1a237e;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -105,6 +108,7 @@ CHAPTERS = {
     "🎢 4. 이차함수": "quadratic",
     "⚡ 5. 미분은 기울기다": "derivative",
     "🏞️ 6. 적분은 넓이다": "integral",
+    "🧠 7. AI와 미적분": "ai_calculus",
     "🤖 AI 수학 튜터": "ai_tutor",
 }
 
@@ -327,7 +331,7 @@ def plot_definite_integral(func, a, b, title="정적분 = 곡선 아래 넓이")
 # ══════════════════════════════════════════════════════════════════════════════
 
 SYSTEM_PROMPT = """당신은 '수학 탐험대 AI 튜터'입니다.
-초등학생도 이해할 수 있도록 미적분 개념을 쉽고 재미있게 설명하세요.
+수포자도 이해할 수 있도록 미적분 개념을 쉽고 재미있게 설명하세요.
 규칙:
 1. 어려운 수학 기호 대신 일상 언어와 비유를 사용하세요.
 2. 예시는 항상 아이들이 아는 것(놀이터, 자전거, 피자, 물 등)으로 드세요.
@@ -359,8 +363,8 @@ def ask_ollama(question: str, model: str, history: list) -> str:
 def page_home():
     st.markdown("""
 <div style="text-align:center; padding:30px 0;">
-  <h1 style="font-size:3rem; color:#1a237e;">🚀 미적분 탐험대</h1>
-  <p style="font-size:1.4rem; color:#555;">초등학생도 이해하는 미분·적분 여행</p>
+  <h1 style="font-size:3.5rem; color:#FFD700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">🚀 미적분 탐험대</h1>
+  <p style="font-size:1.4rem; color:#555;">수포자도 이해하는 미분·적분 여행</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -492,13 +496,11 @@ def page_function_value():
 
     st.markdown("""
 <div class="story-box">
-🎰 <b>오늘의 이야기 — 마법 상자</b><br>
-여기 신비한 마법 상자가 있어요! 이 상자에 숫자를 넣으면,
-상자 안에서 어떤 <b>규칙</b>에 따라 다른 숫자로 바뀌어 나와요.<br>
-예를 들어 "항상 2를 더하는 상자"가 있다면:<br>
-➡️ 3을 넣으면 → <span class="highlight">5</span>가 나와요!<br>
-➡️ 10을 넣으면 → <span class="highlight">12</span>가 나와요!<br>
-이 상자가 바로 <b>함수</b>예요! 📦✨
+🥤 <b>오늘의 이야기 — 자판기 마법</b><br>
+함수는 마치 <b>자판기</b>와 같아요! 버튼(입력)을 누르면 음료수(출력)가 나오죠.<br>
+콜라 버튼을 누르면 콜라가 나오고, 사이다 버튼을 누르면 사이다가 나와요.<br>
+버튼을 눌렀을 때 엉뚱하게 아무것도 안 나오거나, 두 개가 동시에 나오면 고장 난 자판기죠?<br>
+수학의 <b>함수</b>도 입력 하나에 딱 하나씩만 결과가 나와야 해요! 🥤✨
 </div>
 """, unsafe_allow_html=True)
 
@@ -507,11 +509,19 @@ def page_function_value():
     with tab1:
         st.markdown("""
 <div class="concept-card">
-<h4>함수(Function)란?</h4>
+<h4>1. 함수(Function)란?</h4>
 <ul>
-<li>입력값(x)을 넣으면 출력값(y)이 나오는 <b>규칙</b></li>
-<li>표기법: y = f(x) → "x를 넣었을 때 f의 결과"</li>
-<li>한 입력값에는 반드시 <b>하나의</b> 출력값만 있어요</li>
+<li>입력값(x)을 넣으면 출력값(y)이 하나씩 나오는 <b>관계</b></li>
+<li>표기법: <b>y = f(x)</b> (f는 function의 앞글자예요)</li>
+</ul>
+</div>
+
+<div class="concept-card">
+<h4>2. 정의역과 치역 (넣는 것과 나오는 것)</h4>
+<ul>
+<li><b>정의역(Domain):</b> 자판기에 넣을 수 있는 '동전'이나 '버튼'의 모임 (입력 가능한 x)</li>
+<li><b>치역(Range):</b> 자판기에서 실제로 나온 '음료수'의 모임 (계산된 y 값들)</li>
+<li>수포자 팁: "정"의구현을 위해 "정"하고 넣는 값이 정의역!</li>
 </ul>
 </div>
 """, unsafe_allow_html=True)
@@ -524,7 +534,6 @@ def page_function_value():
 | 1 | 3 |
 | 2 | 4 |
 | 5 | 7 |
-| -1 | 1 |
 """)
         col2.markdown("""
 **예시 2: y = x × 2**
@@ -533,7 +542,6 @@ def page_function_value():
 | 1 | 2 |
 | 3 | 6 |
 | 5 | 10 |
-| 0 | 0 |
 """)
 
     with tab2:
@@ -593,11 +601,10 @@ def page_slope():
 
     st.markdown("""
 <div class="story-box">
-🏔️ <b>오늘의 이야기 — 언덕 오르기</b><br>
-자전거를 타고 언덕을 오른다고 생각해봐요!<br>
-어떤 언덕은 <b>완만</b>하고 (기울기가 작아요),<br>
-어떤 언덕은 <b>가파르죠</b> (기울기가 커요).<br>
-기울기는 "얼마나 가파른가?"를 숫자로 표현한 거예요! 🚵
+🪜 <b>오늘의 이야기 — 계단 오르기</b><br>
+계단을 오른다고 생각해 보세요. 계단의 높이(세로)가 높을수록 가파르겠죠?<br>
+반대로 계단의 폭(가로)이 넓으면 발을 뻗기 편하고 덜 가파를 거예요.<br>
+수학에서는 이 <b>가로(폭) 대비 세로(높이)</b>의 비율을 <b>기울기</b>라고 불러요! 🪜✨
 </div>
 """, unsafe_allow_html=True)
 
@@ -606,18 +613,20 @@ def page_slope():
     with tab1:
         st.markdown("""
 <div class="concept-card">
-<h4>기울기 공식</h4>
-<p style="font-size:1.5rem; text-align:center; color:#9C27B0;">
-기울기 = <b>세로 변화</b> ÷ <b>가로 변화</b>
-</p>
-<p style="font-size:1.2rem; text-align:center; color:#555;">
-= (y₂ - y₁) ÷ (x₂ - x₁)
-</p>
+<h4>1. 기울기(Slope)란?</h4>
 <ul>
-<li>기울기 > 0 : 오른쪽으로 올라가는 선 ↗</li>
-<li>기울기 < 0 : 오른쪽으로 내려가는 선 ↘</li>
-<li>기울기 = 0 : 완전히 평평한 선 →</li>
-<li>기울기가 클수록 더 가파른 선!</li>
+<li>선이 얼마나 가파른지 나타내는 숫자예요.</li>
+<li><b>공식:</b> 세로 변화량 ÷ 가로 변화량</li>
+<li><b>기억법:</b> "옆으로 1칸 갈 때 위로 몇 칸 가니?"</li>
+</ul>
+</div>
+
+<div class="concept-card">
+<h4>2. 기울기의 방향</h4>
+<ul>
+<li><b>기울기 > 0 (양수):</b> 오른쪽 위로 쭉! (성장, 등산)</li>
+<li><b>기울기 < 0 (음수):</b> 오른쪽 아래로 뚝! (하락, 하산)</li>
+<li><b>기울기 = 0 :</b> 평평한 바닥 (평지)</li>
 </ul>
 </div>
 """, unsafe_allow_html=True)
@@ -1018,6 +1027,91 @@ def page_integral():
 </div>""", unsafe_allow_html=True)
 
 
+def page_ai_calculus():
+    st.markdown('<div class="chapter-title">🧠 7장. AI와 미적분</div>', unsafe_allow_html=True)
+    
+    st.markdown("""
+<div class="story-box">
+🤖 <b>AI는 어떻게 학습할까요?</b><br>
+인공지능(AI)이 똑똑해지는 비밀은 바로 <b>미분</b>에 있어요!<br>
+AI가 정답을 찾아가는 과정은 마치 '안개 낀 산에서 가장 낮은 골짜기를 찾아 내려가는 것'과 같아요.<br>
+이것을 <b>경사하강법(Gradient Descent)</b>이라고 불러요. ⛰️📉
+</div>
+""", unsafe_allow_html=True)
+
+    tab1, tab2, tab3 = st.tabs(["📖 AI의 학습 원리", "🎮 경사하강법 체험", "🧩 미적분의 역할"])
+
+    with tab1:
+        st.markdown("""
+<div class="concept-card">
+<h4>1. 오차(Error)란?</h4>
+<ul>
+<li>AI가 예측한 값과 실제 정답 사이의 차이예요.</li>
+<li>AI의 목표는 이 <b>오차를 최소(0)</b>로 만드는 것이에요!</li>
+</ul>
+</div>
+
+<div class="concept-card">
+<h4>2. 미분이 왜 필요할까요?</h4>
+<ul>
+<li>지금 위치에서 <b>어느 방향으로 가야 오차가 줄어드는지</b> 알려주는 내비게이션 역할을 해요.</li>
+<li>기울기가 0이 되는 지점(골짜기 끝)이 바로 최적의 정답이에요!</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
+
+    with tab2:
+        st.markdown("#### 경사하강법 시뮬레이션")
+        st.write("함수 f(x) = x² (오차 함수)에서 가장 낮은 점을 찾아볼까요?")
+        
+        if 'ai_x' not in st.session_state:
+            st.session_state.ai_x = 4.0
+        
+        lr = st.slider("학습률 (Learning Rate) - 한 번에 얼마나 이동할까요?", 0.01, 0.5, 0.1)
+        
+        col1, col2 = st.columns(2)
+        if col1.button("한 걸음 내려가기 (학습)"):
+            # f(x) = x^2, f'(x) = 2x
+            gradient = 2 * st.session_state.ai_x
+            st.session_state.ai_x -= lr * gradient
+            
+        if col2.button("처음으로 리셋"):
+            st.session_state.ai_x = 4.0
+            
+        x_val = st.session_state.ai_x
+        y_val = x_val**2
+        
+        st.markdown(f"""
+<div class="concept-card" style="text-align:center;">
+현재 AI의 위치 (x): <span class="highlight">{x_val:.3f}</span><br>
+현재 오차 (y = x²): <span class="highlight">{y_val:.3f}</span>
+</div>
+""", unsafe_allow_html=True)
+
+        # Plot
+        fig, ax = plt.subplots(figsize=(8, 4))
+        x_curve = np.linspace(-5, 5, 100)
+        y_curve = x_curve**2
+        ax.plot(x_curve, y_curve, color="#2196F3", label="오차 함수 (Loss Function)")
+        ax.plot(x_val, y_val, 'ro', markersize=12, label="AI 현재 상태")
+        ax.set_title("경사하강법: 낮은 곳으로 이동하기")
+        ax.legend()
+        st.pyplot(fig)
+        plt.close(fig)
+
+    with tab3:
+        st.markdown("""
+<div class="concept-card">
+<h4>3. AI 속 미적분의 요약</h4>
+<ul>
+<li><b>미분:</b> 어느 방향으로 가야 오차가 줄어드는지 방향(기울기)을 찾아요.</li>
+<li><b>적분:</b> AI가 수많은 데이터를 모아 전체적인 흐름을 파악하거나 확률을 계산할 때 쓰여요.</li>
+<li>수포자 팁: 미적분이 없었다면 챗GPT 같은 AI도 태어날 수 없었을 거예요!</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
+
+
 def page_ai_tutor():
     st.markdown('<div class="chapter-title">🤖 AI 수학 튜터</div>', unsafe_allow_html=True)
 
@@ -1026,7 +1120,7 @@ def page_ai_tutor():
 🤖 <b>gemma4 AI 튜터에게 무엇이든 물어보세요!</b><br>
 미적분에 대해 궁금한 것, 이해가 안 되는 것,
 더 알고 싶은 것 무엇이든 질문해봐요!<br>
-AI 튜터는 초등학생도 이해할 수 있게 친절하게 설명해줘요. 😊
+AI 튜터는 수포자도 이해할 수 있게 친절하게 설명해줘요. 😊
 </div>
 """, unsafe_allow_html=True)
 
@@ -1143,8 +1237,8 @@ def sidebar():
         st.markdown("""
 <div style="text-align:center; padding:10px 0 20px;">
   <div style="font-size:2.5rem;">🧮</div>
-  <div style="font-size:1.2rem; font-weight:900; color:#1a237e;">미적분 탐험대</div>
-  <div style="font-size:.85rem; color:#888;">초등학생도 OK!</div>
+  <div style="font-size:1.2rem; font-weight:900; color:#FFD700;">미적분 탐험대</div>
+  <div style="font-size:.85rem; color:#888;">수포자도 OK!</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1153,7 +1247,8 @@ def sidebar():
         st.markdown("---")
         st.markdown("#### 📊 학습 진도")
         chapters_done = ["📏 1. 수직선", "📊 2. 함숫값", "📐 3. 기울기",
-                         "🎢 4. 이차함수", "⚡ 5. 미분은 기울기다", "🏞️ 6. 적분은 넓이다"]
+                         "🎢 4. 이차함수", "⚡ 5. 미분은 기울기다", "🏞️ 6. 적분은 넓이다",
+                         "🧠 7. AI와 미적분"]
         visited = st.session_state.get("visited_chapters", set())
         for ch in chapters_done:
             icon = "✅" if ch in visited else "⬜"
@@ -1187,6 +1282,7 @@ def main():
         "quadratic": page_quadratic,
         "derivative": page_derivative,
         "integral": page_integral,
+        "ai_calculus": page_ai_calculus,
         "ai_tutor": page_ai_tutor,
     }
     pages[page_key]()

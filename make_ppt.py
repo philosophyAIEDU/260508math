@@ -237,7 +237,7 @@ def fig_ai_tutor():
     fig, ax = plt.subplots(figsize=(8, 4))
     ax.axis("off")
     boxes = [
-        (0.05, 0.6, "초등학생 질문\n'미분이 뭐야?'", "#E3F2FD", "#1976D2"),
+        (0.05, 0.6, "수포자 맞춤형\n'미분·적분이란?'", "#E3F2FD", "#1976D2"),
         (0.38, 0.6, "Ollama\ngemma4 모델", "#F3E5F5", "#9C27B0"),
         (0.70, 0.6, "친절한 설명\n비유와 예시로!", "#E8F5E9", "#4CAF50"),
         (0.38, 0.15, "Streamlit UI\n대화형 채팅", "#FFF9C4", "#FF9800"),
@@ -279,7 +279,7 @@ def make_title_slide(prs):
     add_text(slide, "🚀 미적분 탐험대",
              0.8, 1.5, 11.5, 1.8, font_size=54, bold=True, color=WHITE,
              align=PP_ALIGN.CENTER)
-    add_text(slide, "초등학생도 이해하는 미분 · 적분 여행",
+    add_text(slide, "수포자가 이해하는 미분 및 적분 원리",
              1.0, 3.3, 11.0, 0.9, font_size=28, color=RGBColor(0xBB, 0xDE, 0xFB),
              align=PP_ALIGN.CENTER)
     add_text(slide, "Streamlit + Ollama (gemma4) 기반 스토리텔링 학습",

@@ -1,4 +1,4 @@
-"""수포자도 이해하는 미적분 탐험대 — Streamlit + Ollama(gemma4)"""
+"""수포자도 이해하는 수학 탐험대 — 미적분 · 통계학 · 선형대수학 — Streamlit + Ollama(gemma4)"""
 
 import streamlit as st
 import numpy as np
@@ -35,7 +35,7 @@ def _set_korean_font():
 _set_korean_font()
 
 # ── 페이지 설정 ────────────────────────────────────────────────────────────
-st.set_page_config(page_title="미적분 탐험대 🚀", page_icon="🧮",
+st.set_page_config(page_title="수학 탐험대 🚀", page_icon="🧮",
                    layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
@@ -64,6 +64,7 @@ html,body,[class*="css"]{font-family:'Noto Sans KR',sans-serif;}
 # ── 챕터 정의 ──────────────────────────────────────────────────────────────
 CHAPTERS = {
     "🏠 홈": "home",
+    # ── 미적분 ──
     "📏 1. 수직선": "number_line",
     "📊 2. 함숫값": "function_value",
     "📐 3. 기울기": "slope",
@@ -71,6 +72,15 @@ CHAPTERS = {
     "⚡ 5. 미분은 기울기다": "derivative",
     "🏞️ 6. 적분은 넓이다": "integral",
     "🧠 7. AI와 미적분": "ai_calculus",
+    # ── 통계학 ──
+    "📉 8. 평균과 분산": "stat_descriptive",
+    "🔔 9. 확률분포": "stat_distribution",
+    "🔗 10. 상관관계와 회귀": "stat_regression",
+    # ── 선형대수학 ──
+    "🏹 11. 벡터": "linalg_vector",
+    "🔲 12. 행렬": "linalg_matrix",
+    "🌟 13. 고유값과 고유벡터": "linalg_eigen",
+    # ── AI 튜터 ──
     "🤖 AI 수학 튜터": "ai_tutor",
 }
 
@@ -273,13 +283,14 @@ def plot_integral_area(func,a,b,exact,label=""):
     return fig
 
 # ── AI 튜터 ────────────────────────────────────────────────────────────────
-SYSTEM_PROMPT = """당신은 '미적분 탐험대 AI 튜터'입니다.
+SYSTEM_PROMPT = """당신은 '수학 탐험대 AI 튜터'입니다. 미적분, 통계학, 선형대수학을 가르칩니다.
 규칙:
 1. 초등학생도 이해하도록 쉬운 말과 비유를 사용하세요.
 2. 예시는 피자, 자전거, 자동차, 온도계 같은 일상 소재로 드세요.
 3. 수식은 최대한 단순하게, 말로 풀어서 설명하세요.
-4. 항상 응원의 말을 포함하세요.
-5. 한국어로 답변하세요."""
+4. AI/딥러닝과의 연결을 항상 언급하세요.
+5. 항상 응원의 말을 포함하세요.
+6. 한국어로 답변하세요."""
 
 def ask_ollama(question,model,history):
     if not OLLAMA_AVAILABLE:
@@ -315,15 +326,16 @@ def page_home():
     st.markdown("""
 <div style="text-align:center;padding:28px 0;">
   <h1 style="font-size:3.2rem;color:#FFD700;text-shadow:2px 2px 6px rgba(0,0,0,.3);">
-    🚀 미적분 탐험대</h1>
-  <p style="font-size:1.3rem;color:#555;">수포자도 OK! 이야기로 배우는 미분·적분</p>
+    🚀 수학 탐험대</h1>
+  <p style="font-size:1.3rem;color:#555;">수포자도 OK! 이야기로 배우는 미분·적분·통계·선형대수</p>
 </div>""", unsafe_allow_html=True)
 
-    c1,c2,c3=st.columns(3)
-    for col,(icon,title,desc) in zip([c1,c2,c3],[
-        ("🎯","단계별 학습","수직선→함수→기울기→미분→적분, 순서대로!"),
+    c1,c2,c3,c4=st.columns(4)
+    for col,(icon,title,desc) in zip([c1,c2,c3,c4],[
+        ("🎯","단계별 학습","수직선→미적분→통계→선형대수, 순서대로!"),
         ("🎨","풍부한 시각화","모든 개념을 그래프로 눈으로 확인"),
         ("🤖","AI 튜터","gemma4가 모르는 개념 친절하게 설명"),
+        ("🧠","AI 연결","각 주제가 AI에 어떻게 쓰이는지 설명"),
     ]):
         col.markdown(f"""<div class="concept-card" style="text-align:center;">
 <div style="font-size:2.4rem;">{icon}</div>
@@ -331,20 +343,47 @@ def page_home():
 <p style="color:#555;">{desc}</p></div>""", unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### 📚 미적분까지 가는 7단계 여정")
-    steps=[("📏","수직선","숫자의 복도"),("📊","함숫값","마법 상자"),
+
+    st.markdown("### ➕ 미적분 (Calculus) — AI 학습의 엔진")
+    steps_calc=[("📏","수직선","숫자의 복도"),("📊","함숫값","마법 상자"),
            ("📐","기울기","얼마나 가파를까"),("🎢","이차함수","포물선의 세계"),
            ("⚡","미분","순간 기울기"),("🏞️","적분","곡선 아래 넓이"),("🧠","AI와 미적분","딥러닝의 심장")]
     cols=st.columns(7)
-    for col,(icon,name,sub) in zip(cols,steps):
-        col.markdown(f"""<div style="text-align:center;background:#f5f5f5;
+    for col,(icon,name,sub) in zip(cols,steps_calc):
+        col.markdown(f"""<div style="text-align:center;background:#e8f4fd;
 border-radius:10px;padding:10px 4px;">
 <div style="font-size:1.7rem;">{icon}</div>
 <div style="font-weight:700;color:#1a237e;font-size:.88rem;">{name}</div>
 <div style="font-size:.73rem;color:#777;">{sub}</div></div>""", unsafe_allow_html=True)
 
     st.markdown("---")
-    st.info("👈 사이드바에서 챕터를 선택해 시작하세요! 1장부터 차례로 읽으면 미적분이 자연스럽게 이해돼요.")
+    st.markdown("### 📊 통계학 (Statistics) — AI가 세상을 이해하는 언어")
+    steps_stat=[("📉","평균과 분산","데이터의 중심과 퍼짐"),
+                ("🔔","확률분포","정규분포와 확률"),
+                ("🔗","상관관계와 회귀","패턴 찾기")]
+    cols=st.columns(3)
+    for col,(icon,name,sub) in zip(cols,steps_stat):
+        col.markdown(f"""<div style="text-align:center;background:#e8f5e9;
+border-radius:10px;padding:10px 4px;">
+<div style="font-size:1.7rem;">{icon}</div>
+<div style="font-weight:700;color:#1b5e20;font-size:.88rem;">{name}</div>
+<div style="font-size:.73rem;color:#777;">{sub}</div></div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("### 🔲 선형대수학 (Linear Algebra) — AI의 데이터 언어")
+    steps_la=[("🏹","벡터","방향이 있는 화살표"),
+              ("🔲","행렬","데이터 변환기"),
+              ("🌟","고유값·고유벡터","AI의 핵심 도구")]
+    cols=st.columns(3)
+    for col,(icon,name,sub) in zip(cols,steps_la):
+        col.markdown(f"""<div style="text-align:center;background:#f3e5f5;
+border-radius:10px;padding:10px 4px;">
+<div style="font-size:1.7rem;">{icon}</div>
+<div style="font-weight:700;color:#4a148c;font-size:.88rem;">{name}</div>
+<div style="font-size:.73rem;color:#777;">{sub}</div></div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.info("👈 사이드바에서 챕터를 선택해 시작하세요! 미적분(1~7장) → 통계학(8~10장) → 선형대수(11~13장) 순서로 읽으면 AI 수학이 완성돼요.")
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  1장. 수직선
@@ -1443,6 +1482,947 @@ AI에서 적분은:<br>
              "f'(x)=2x=0 → x=0이 최솟값. 미분값=0인 점이 꼭짓점!")
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  통계학 그래프 헬퍼
+# ══════════════════════════════════════════════════════════════════════════════
+
+def plot_histogram_with_stats(data, title="히스토그램"):
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+    mean_v = np.mean(data); median_v = np.median(data); std_v = np.std(data)
+    ax = axes[0]
+    ax.hist(data, bins=15, color="#4CAF50", alpha=0.7, edgecolor="white", linewidth=0.8)
+    ax.axvline(mean_v, color="#F44336", lw=2.5, linestyle="--", label=f"평균={mean_v:.2f}")
+    ax.axvline(median_v, color="#1976D2", lw=2.5, linestyle="-.", label=f"중앙값={median_v:.2f}")
+    ax.set_title(title, fontsize=12); ax.legend(fontsize=10); ax.grid(True, alpha=0.25)
+    ax.set_xlabel("값"); ax.set_ylabel("빈도")
+    ax2 = axes[1]; ax2.axis("off")
+    stats_text = [
+        ["통계량", "값"],
+        ["평균 (Mean)", f"{mean_v:.3f}"],
+        ["중앙값 (Median)", f"{median_v:.3f}"],
+        ["표준편차 (Std)", f"{std_v:.3f}"],
+        ["분산 (Variance)", f"{std_v**2:.3f}"],
+        ["최솟값", f"{np.min(data):.3f}"],
+        ["최댓값", f"{np.max(data):.3f}"],
+    ]
+    t = ax2.table(cellText=stats_text[1:], colLabels=stats_text[0], loc="center", cellLoc="center")
+    t.auto_set_font_size(False); t.set_fontsize(12); t.scale(1.5, 1.8)
+    for (r, c), cell in t.get_celld().items():
+        if r == 0: cell.set_facecolor("#1976D2"); cell.set_text_props(color="white", fontweight="bold")
+        elif r % 2 == 0: cell.set_facecolor("#e3f2fd")
+    ax2.set_title("기술통계 요약", fontsize=12)
+    plt.tight_layout(); return fig
+
+def plot_normal_distribution(mu=0, sigma=1):
+    from scipy.stats import norm
+    fig, ax = plt.subplots(figsize=(9, 5))
+    x = np.linspace(mu - 4*sigma, mu + 4*sigma, 400)
+    y = norm.pdf(x, mu, sigma)
+    ax.plot(x, y, color="#1976D2", lw=2.8, label=f"N(μ={mu}, σ={sigma})")
+    for k, col, lbl in [(1,"#4CAF50","68%"),(2,"#FF9800","95%"),(3,"#F44336","99.7%")]:
+        x_fill = np.linspace(mu - k*sigma, mu + k*sigma, 300)
+        ax.fill_between(x_fill, norm.pdf(x_fill, mu, sigma), alpha=0.18, color=col, label=f"μ±{k}σ ({lbl})")
+    ax.axvline(mu, color="#9C27B0", lw=2, linestyle="--", label=f"μ={mu}")
+    ax.set_title(f"정규분포 N(μ={mu}, σ={sigma})", fontsize=13)
+    ax.legend(fontsize=10); ax.grid(True, alpha=0.25)
+    ax.set_xlabel("값"); ax.set_ylabel("확률밀도")
+    return fig
+
+def plot_scatter_regression(x_data, y_data, x_label="x", y_label="y"):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.scatter(x_data, y_data, color="#1976D2", s=70, alpha=0.8, zorder=5, label="데이터")
+    m, b = np.polyfit(x_data, y_data, 1)
+    x_line = np.linspace(min(x_data), max(x_data), 100)
+    ax.plot(x_line, m * x_line + b, color="#F44336", lw=2.5, label=f"회귀선: y={m:.2f}x+{b:.2f}")
+    r = np.corrcoef(x_data, y_data)[0, 1]
+    ax.set_title(f"산점도 & 회귀선 (상관계수 r={r:.3f})", fontsize=12)
+    ax.legend(fontsize=10); ax.grid(True, alpha=0.25)
+    ax.set_xlabel(x_label); ax.set_ylabel(y_label)
+    return fig, m, b, np.corrcoef(x_data, y_data)[0, 1]
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  선형대수학 그래프 헬퍼
+# ══════════════════════════════════════════════════════════════════════════════
+
+def plot_vectors_2d(vectors, labels, colors, title="벡터"):
+    fig, ax = plt.subplots(figsize=(7, 7))
+    ax.axhline(0, color="#bbb", lw=0.8); ax.axvline(0, color="#bbb", lw=0.8)
+    lim = max(max(abs(v[0]), abs(v[1])) for v in vectors) * 1.4 + 1
+    ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim)
+    for v, lbl, col in zip(vectors, labels, colors):
+        ax.annotate("", xy=(v[0], v[1]), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle="->", color=col, lw=2.8))
+        ax.text(v[0] * 1.08, v[1] * 1.08, lbl, fontsize=13, color=col, fontweight="bold")
+    ax.set_title(title, fontsize=13); ax.grid(True, alpha=0.2)
+    ax.set_xlabel("x"); ax.set_ylabel("y")
+    ax.set_aspect("equal")
+    return fig
+
+def plot_matrix_transform(matrix, title="행렬 변환"):
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    points = np.array([[1,0],[0,1],[-1,0],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1],[0,0]]).T
+    transformed = matrix @ points
+    colors_pts = ["#F44336","#4CAF50","#1976D2","#FF9800","#9C27B0","#00BCD4","#E91E63","#8BC34A","#000"]
+    for ax, pts, ttl in zip(axes, [points, transformed], ["변환 전 (원본)", f"변환 후\n{matrix}"]):
+        ax.axhline(0, color="#bbb", lw=0.8); ax.axvline(0, color="#bbb", lw=0.8)
+        ax.scatter(pts[0], pts[1], c=colors_pts, s=120, zorder=5)
+        theta = np.linspace(0, 2*np.pi, 100)
+        unit = np.array([np.cos(theta), np.sin(theta)])
+        tunit = matrix @ unit if ttl != "변환 전 (원본)" else unit
+        ax.plot(tunit[0], tunit[1], color="#1976D2", lw=1.5, alpha=0.5, linestyle="--", label="단위원")
+        ax.set_title(ttl, fontsize=11); ax.grid(True, alpha=0.2)
+        ax.set_xlabel("x"); ax.set_ylabel("y"); ax.set_aspect("equal")
+        lim = max(np.max(np.abs(pts)) * 1.3, 1.5)
+        ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim)
+    plt.suptitle(title, fontsize=13); plt.tight_layout(); return fig
+
+def plot_eigenvectors(matrix):
+    try:
+        eigenvalues, eigenvectors = np.linalg.eig(matrix)
+    except Exception:
+        return None
+    fig, ax = plt.subplots(figsize=(7, 7))
+    ax.axhline(0, color="#bbb", lw=0.8); ax.axvline(0, color="#bbb", lw=0.8)
+    colors_ev = ["#F44336", "#1976D2", "#4CAF50"]
+    for i, (val, vec) in enumerate(zip(eigenvalues, eigenvectors.T)):
+        if np.iscomplex(val): continue
+        v = vec.real
+        col = colors_ev[i % len(colors_ev)]
+        ax.annotate("", xy=(v[0]*2, v[1]*2), xytext=(0,0),
+                    arrowprops=dict(arrowstyle="->", color=col, lw=3))
+        transformed = matrix @ (v * 2)
+        ax.annotate("", xy=(transformed[0], transformed[1]), xytext=(0,0),
+                    arrowprops=dict(arrowstyle="->", color=col, lw=1.5, linestyle="dashed", alpha=0.5))
+        ax.text(v[0]*2.1, v[1]*2.1, f"v{i+1}\n(λ={val.real:.2f})", fontsize=11, color=col, fontweight="bold")
+    lim = 3.5
+    ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim)
+    ax.set_title("고유벡터 (실선) vs 변환 후 (점선)", fontsize=12)
+    ax.grid(True, alpha=0.2); ax.set_aspect("equal")
+    ax.set_xlabel("x"); ax.set_ylabel("y")
+    return fig
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  8장. 평균과 분산 (기술통계)
+# ══════════════════════════════════════════════════════════════════════════════
+def page_stat_descriptive():
+    st.markdown('<div class="chapter-title">📉 8장. 평균과 분산 — 데이터의 중심과 퍼짐</div>',
+                unsafe_allow_html=True)
+
+    st.markdown("""
+<div class="story-box">
+📊 <b>이야기: 반 아이들의 키</b><br>
+우리 반 30명의 키를 측정했어요. 이 많은 숫자를 어떻게 요약할까요?<br>
+"평균 키가 165cm" — 단 한 숫자로 전체를 대표할 수 있어요!<br>
+하지만 평균만으로는 부족해요. 키가 모두 비슷한지, 아니면 어떤 아이는 매우 크고
+어떤 아이는 매우 작은지 모르잖아요.<br>
+<b>분산(표준편차)</b>이 바로 "얼마나 퍼져있냐"를 알려줘요! 📏
+</div>""", unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs(["📖 개념", "🔍 단계별 계산", "🎮 직접 해보기", "🧩 퀴즈"])
+
+    with tab1:
+        col1, col2 = st.columns(2)
+        col1.markdown("""
+<div class="concept-card">
+<h4>✅ 대표값 — 데이터의 중심</h4>
+<ul>
+<li><b>평균 (Mean):</b> 모든 값의 합 ÷ 개수<br>
+  예) [2, 4, 6] → (2+4+6)/3 = 4</li>
+<li><b>중앙값 (Median):</b> 크기 순으로 나열했을 때 가운데 값<br>
+  예) [1, 3, 9] → 중앙값 = 3</li>
+<li><b>최빈값 (Mode):</b> 가장 자주 나오는 값<br>
+  예) [1, 2, 2, 3, 2] → 최빈값 = 2</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+        col2.markdown("""
+<div class="concept-card">
+<h4>✅ 산포도 — 데이터의 퍼짐</h4>
+<ul>
+<li><b>분산 (Variance):</b> 각 값과 평균의 차이²의 평균<br>
+  → "평균에서 얼마나 멀리 떨어져 있나?"</li>
+<li><b>표준편차 (Std Dev):</b> √분산<br>
+  → 분산과 같은 단위로 표현</li>
+<li><b>범위 (Range):</b> 최댓값 - 최솟값</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="big-formula">분산 = Σ(값 - 평균)² / n &nbsp;&nbsp;|&nbsp;&nbsp; 표준편차 = √분산</div>""",
+                    unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="tip-card">
+<b>💡 AI에서 통계의 역할</b><br>
+• <b>데이터 전처리:</b> 평균=0, 표준편차=1로 정규화 (Normalization) → AI 학습 속도 향상<br>
+• <b>이상값 탐지:</b> 평균에서 3σ 이상 떨어진 값은 이상치일 가능성 높음<br>
+• <b>손실 측정:</b> MSE(Mean Squared Error) = 분산 개념 그대로!
+</div>""", unsafe_allow_html=True)
+
+        np.random.seed(42)
+        sample_data = np.concatenate([np.random.normal(170, 8, 80), np.random.normal(155, 5, 20)])
+        _show(plot_histogram_with_stats(sample_data, "학생 키 분포 예시 (n=100)"))
+
+    with tab2:
+        st.markdown("### 단계별 분산 계산")
+        st.markdown("""
+<div class="step-card">
+<b>📝 예제: [2, 4, 4, 4, 5, 5, 7, 9] 의 분산과 표준편차</b><br>
+① 평균 계산: (2+4+4+4+5+5+7+9) ÷ 8 = 40 ÷ 8 = <b>5</b><br>
+② 각 값과 평균의 차: -3, -1, -1, -1, 0, 0, 2, 4<br>
+③ 차의 제곱: 9, 1, 1, 1, 0, 0, 4, 16<br>
+④ 제곱의 평균(분산): (9+1+1+1+0+0+4+16) ÷ 8 = 32 ÷ 8 = <b>4.0</b><br>
+⑤ 표준편차: √4.0 = <b>2.0</b>
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="warn-card">
+<b>⚠️ 평균만 보면 속는다!</b><br>
+집합 A = [5, 5, 5, 5] → 평균=5, 표준편차=0 (모두 같음)<br>
+집합 B = [1, 3, 7, 9] → 평균=5, 표준편차≈3.2 (많이 퍼짐)<br>
+두 집합 모두 평균은 5지만, 데이터의 성격이 완전히 달라요!
+</div>""", unsafe_allow_html=True)
+
+    with tab3:
+        st.markdown("#### 🎮 나만의 데이터로 통계 계산!")
+        data_input = st.text_input("숫자를 쉼표로 입력 (예: 70,85,90,60,95,78)", "70,85,90,60,95,78,88,72,65,91")
+        try:
+            user_data = [float(x.strip()) for x in data_input.split(",") if x.strip()]
+            if len(user_data) >= 2:
+                _show(plot_histogram_with_stats(user_data, "내 데이터 분석"))
+                col1, col2, col3 = st.columns(3)
+                col1.metric("평균", f"{np.mean(user_data):.2f}")
+                col2.metric("표준편차", f"{np.std(user_data):.2f}")
+                col3.metric("중앙값", f"{np.median(user_data):.2f}")
+            else:
+                st.warning("숫자를 2개 이상 입력해주세요!")
+        except Exception:
+            st.error("숫자와 쉼표만 입력해주세요!")
+
+        st.markdown("---")
+        st.markdown("#### 정규화 (Normalization) 체험")
+        st.markdown("AI는 학습 전 데이터를 **평균=0, 표준편차=1**로 변환해요!")
+        try:
+            if len(user_data) >= 2:
+                normalized = (np.array(user_data) - np.mean(user_data)) / np.std(user_data)
+                fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+                axes[0].hist(user_data, bins=min(10, len(user_data)), color="#1976D2", alpha=0.7, edgecolor="white")
+                axes[0].set_title(f"원본 (평균={np.mean(user_data):.1f})", fontsize=11)
+                axes[1].hist(normalized, bins=min(10, len(user_data)), color="#4CAF50", alpha=0.7, edgecolor="white")
+                axes[1].set_title(f"정규화 후 (평균≈0, σ≈1)", fontsize=11)
+                for ax in axes:
+                    ax.grid(True, alpha=0.25); ax.set_xlabel("값"); ax.set_ylabel("빈도")
+                plt.tight_layout(); _show(fig)
+        except Exception:
+            pass
+
+    with tab4:
+        st.markdown("### 🧩 기술통계 퀴즈")
+        st.markdown("---")
+        quiz("stat1", "Q1. [1, 3, 5, 7, 9]의 평균은?",
+             ["4", "5", "6", "3"], 1, "합=25, 개수=5 → 25÷5=5!")
+        st.markdown("---")
+        quiz("stat2", "Q2. 표준편차가 클수록 데이터는?",
+             ["평균에 몰려있다", "퍼져있다", "모두 같다", "음수다"], 1,
+             "표준편차가 클수록 값들이 평균에서 멀리 떨어져(퍼져) 있어요!")
+        st.markdown("---")
+        quiz("stat3", "Q3. AI에서 데이터를 평균=0, 표준편차=1로 바꾸는 것은?",
+             ["분산", "정규화", "미분", "행렬곱"], 1,
+             "정규화(Normalization/Standardization)! AI 학습 속도와 정확도를 높여요!")
+        st.markdown("---")
+        quiz("stat4", "Q4. MSE(Mean Squared Error)와 관련된 통계 개념은?",
+             ["중앙값", "최빈값", "분산", "범위"], 2,
+             "MSE = 오차²의 평균 = 분산 개념과 동일! AI 손실함수의 기본이에요.")
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  9장. 확률분포
+# ══════════════════════════════════════════════════════════════════════════════
+def page_stat_distribution():
+    st.markdown('<div class="chapter-title">🔔 9장. 확률분포 — AI가 불확실성을 다루는 법</div>',
+                unsafe_allow_html=True)
+
+    st.markdown("""
+<div class="story-box">
+🎲 <b>이야기: 주사위와 키 분포</b><br>
+주사위를 던지면 1~6이 나와요. 각각 나올 확률은 1/6씩 — 이게 <b>확률분포</b>예요!<br>
+사람의 키를 측정하면 대부분 평균 근처에 몰리고, 아주 크거나 작은 사람은 드물어요.<br>
+이런 패턴을 <b>정규분포(종 모양)</b>라고 해요.<br>
+ChatGPT가 다음 단어를 고를 때도 확률분포를 사용해요! 🔔
+</div>""", unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs(["📖 개념", "🔔 정규분포 탐구", "🎮 직접 체험", "🧩 퀴즈"])
+
+    with tab1:
+        col1, col2 = st.columns(2)
+        col1.markdown("""
+<div class="concept-card">
+<h4>✅ 확률분포란?</h4>
+<ul>
+<li><b>이산확률분포:</b> 셀 수 있는 값 (주사위, 동전 등)<br>
+  예) 동전 앞면: P=0.5, 뒷면: P=0.5</li>
+<li><b>연속확률분포:</b> 연속적인 값 (키, 점수 등)<br>
+  예) 키: 165~170cm 사이에 있을 확률</li>
+<li><b>핵심 규칙:</b> 모든 확률의 합 = 1<br>
+  → 적분하면 1이 돼요!</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+        col2.markdown("""
+<div class="concept-card">
+<h4>✅ 정규분포 (Normal Distribution)</h4>
+<ul>
+<li><b>종 모양</b> 그래프 — 자연에서 가장 흔한 분포</li>
+<li>μ (뮤) = 평균 → 종의 중심</li>
+<li>σ (시그마) = 표준편차 → 종의 폭</li>
+<li>μ±1σ 안에 약 <b>68%</b></li>
+<li>μ±2σ 안에 약 <b>95%</b></li>
+<li>μ±3σ 안에 약 <b>99.7%</b></li>
+</ul>
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="big-formula">정규분포 PDF: f(x) = (1/σ√2π) × exp(-(x-μ)²/2σ²)</div>""",
+                    unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="tip-card">
+<b>💡 AI와 확률분포</b><br>
+• <b>ChatGPT</b>: 다음 토큰(단어)을 확률분포로 선택해요<br>
+• <b>이미지 생성 AI (Diffusion Model)</b>: 정규분포 노이즈에서 시작해서 이미지를 만들어요<br>
+• <b>Softmax</b>: AI 분류기의 출력을 확률분포로 변환 (합이 1이 되게)
+</div>""", unsafe_allow_html=True)
+
+        _show(plot_normal_distribution(0, 1))
+
+    with tab2:
+        st.markdown("#### 🔔 정규분포 파라미터 조절")
+        c1, c2 = st.columns(2)
+        mu_val = c1.slider("평균 μ", -3.0, 3.0, 0.0, 0.5)
+        sigma_val = c2.slider("표준편차 σ", 0.3, 3.0, 1.0, 0.1)
+        _show(plot_normal_distribution(mu_val, sigma_val))
+
+        col1, col2, col3 = st.columns(3)
+        from scipy.stats import norm
+        p1 = norm.cdf(mu_val + sigma_val, mu_val, sigma_val) - norm.cdf(mu_val - sigma_val, mu_val, sigma_val)
+        p2 = norm.cdf(mu_val + 2*sigma_val, mu_val, sigma_val) - norm.cdf(mu_val - 2*sigma_val, mu_val, sigma_val)
+        col1.metric(f"μ±1σ 범위 내 확률", f"{p1*100:.1f}%")
+        col2.metric(f"μ±2σ 범위 내 확률", f"{p2*100:.1f}%")
+        col3.metric("μ 이하 확률 (50%)", f"{norm.cdf(mu_val, mu_val, sigma_val)*100:.1f}%")
+
+        st.markdown("""
+<div class="warn-card">
+<b>⚠️ 왜 정규분포가 중요한가?</b><br>
+중심극한정리: 어떤 분포든 충분히 많이 더하면 정규분포에 가까워져요!<br>
+그래서 현실 데이터의 오차(noise)는 대부분 정규분포를 따라요.
+</div>""", unsafe_allow_html=True)
+
+    with tab3:
+        st.markdown("#### 🎲 주사위 시뮬레이션 — 중심극한정리")
+        n_dice = st.slider("주사위 개수 (더 많을수록 정규분포에 가까워져요!)", 1, 20, 1)
+        n_trials = 3000
+        np.random.seed(0)
+        results = np.sum(np.random.randint(1, 7, (n_trials, n_dice)), axis=1)
+        fig, ax = plt.subplots(figsize=(9, 4.5))
+        ax.hist(results, bins=min(30, n_dice*5+5), color="#9C27B0", alpha=0.7, edgecolor="white",
+                density=True, label=f"주사위 {n_dice}개 합 ({n_trials}번)")
+        if n_dice >= 3:
+            mu_est, sigma_est = np.mean(results), np.std(results)
+            x_norm = np.linspace(results.min()-1, results.max()+1, 200)
+            from scipy.stats import norm
+            ax.plot(x_norm, norm.pdf(x_norm, mu_est, sigma_est), color="#F44336", lw=2.5, label="정규분포 근사")
+        ax.set_title(f"주사위 {n_dice}개의 합 분포 — {'정규분포에 가까워요!' if n_dice>=5 else '아직 균일에 가까워요'}", fontsize=11)
+        ax.legend(fontsize=10); ax.grid(True, alpha=0.25)
+        ax.set_xlabel("합계"); ax.set_ylabel("확률밀도")
+        _show(fig)
+        st.info(f"주사위가 {n_dice}개일 때: 평균≈{np.mean(results):.1f}, 표준편차≈{np.std(results):.1f}")
+
+    with tab4:
+        st.markdown("### 🧩 확률분포 퀴즈")
+        st.markdown("---")
+        quiz("dist1", "Q1. 정규분포에서 μ±2σ 안에 데이터가 약 몇 % 있나요?",
+             ["68%", "95%", "99.7%", "50%"], 1, "68-95-99.7 규칙! μ±2σ = 약 95%!")
+        st.markdown("---")
+        quiz("dist2", "Q2. ChatGPT가 다음 단어를 선택할 때 사용하는 것은?",
+             ["평균값", "확률분포", "분산", "표준편차"], 1,
+             "ChatGPT는 각 토큰(단어)의 확률분포(Softmax 출력)에서 다음 단어를 선택해요!")
+        st.markdown("---")
+        quiz("dist3", "Q3. 정규분포를 결정하는 두 파라미터는?",
+             ["최솟값과 최댓값", "평균(μ)과 표준편차(σ)", "중앙값과 최빈값", "분산과 범위"], 1,
+             "정규분포 N(μ, σ²)는 평균 μ와 표준편차 σ로 완전히 결정돼요!")
+        st.markdown("---")
+        quiz("dist4", "Q4. 확률분포에서 전체 면적(적분값)은?",
+             ["0", "0.5", "1", "무한대"], 2,
+             "확률의 총합은 항상 1! 연속분포에서는 넓이(적분) = 1이에요.")
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  10장. 상관관계와 회귀
+# ══════════════════════════════════════════════════════════════════════════════
+def page_stat_regression():
+    st.markdown('<div class="chapter-title">🔗 10장. 상관관계와 회귀 — AI 예측의 기초</div>',
+                unsafe_allow_html=True)
+
+    st.markdown("""
+<div class="story-box">
+🏠 <b>이야기: 집 크기와 가격</b><br>
+집이 클수록 비싸다 — 이런 패턴을 <b>상관관계</b>라고 해요.<br>
+그리고 "집 크기로 가격을 예측하는 수식"을 찾는 것이 <b>회귀(Regression)</b>예요!<br>
+AI 예측 모델의 가장 기본 원리: 데이터에서 패턴을 찾아 <b>직선(또는 곡선)으로 표현</b>해요.<br>
+이 직선을 찾는 데 미분(경사하강법)이 사용돼요! 🏡
+</div>""", unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs(["📖 개념", "🔍 상관계수 탐구", "🎮 직접 해보기", "🧩 퀴즈"])
+
+    with tab1:
+        col1, col2 = st.columns(2)
+        col1.markdown("""
+<div class="concept-card">
+<h4>✅ 상관계수 r</h4>
+<ul>
+<li><b>r = +1:</b> 완전한 양의 상관 (x↑ → y↑)</li>
+<li><b>r = 0:</b> 상관없음 (x와 y 무관계)</li>
+<li><b>r = -1:</b> 완전한 음의 상관 (x↑ → y↓)</li>
+<li>|r| > 0.7: 강한 상관관계</li>
+<li>|r| < 0.3: 약한 상관관계</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+        col2.markdown("""
+<div class="concept-card">
+<h4>✅ 선형회귀 (Linear Regression)</h4>
+<ul>
+<li><b>목표:</b> y = ax + b 직선 찾기</li>
+<li><b>방법:</b> 예측값과 실제값의 차이(MSE)를 최소화</li>
+<li><b>AI 연결:</b> 가장 단순한 AI 예측 모델</li>
+<li>딥러닝도 이 아이디어의 확장이에요!</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="big-formula">MSE = (1/n) Σ(y예측 - y실제)² → 이것을 최소화하는 a, b를 찾자!</div>""",
+                    unsafe_allow_html=True)
+
+        np.random.seed(7)
+        x_demo = np.random.uniform(20, 80, 40)
+        y_demo = 2.5 * x_demo + 10 + np.random.normal(0, 15, 40)
+        fig_demo, _, _, _ = plot_scatter_regression(x_demo, y_demo, "집 크기 (평)", "가격 (천만원)")
+        _show(fig_demo)
+
+        st.markdown("""
+<div class="tip-card">
+<b>💡 AI 모델링의 흐름</b><br>
+① 데이터 수집 → ② 상관관계 확인 → ③ 회귀 모델 선택<br>
+④ 경사하강법으로 최적 파라미터(a, b) 학습 → ⑤ 예측!<br>
+딥러닝은 이 과정을 수천 개의 변수에 대해 반복하는 것이에요.
+</div>""", unsafe_allow_html=True)
+
+    with tab2:
+        st.markdown("#### 🔍 상관계수에 따른 산점도 모양")
+        target_r = st.select_slider("목표 상관계수 r", [-0.95, -0.7, -0.4, 0.0, 0.4, 0.7, 0.95], value=0.7)
+        np.random.seed(42)
+        n_pts = 50
+        cov_mat = [[1, target_r], [target_r, 1]]
+        xy = np.random.multivariate_normal([0, 0], cov_mat, n_pts)
+        fig_r, ax_r = plt.subplots(figsize=(7, 5))
+        ax_r.scatter(xy[:, 0], xy[:, 1], color="#1976D2", s=60, alpha=0.8)
+        if abs(target_r) > 0.1:
+            m_r, b_r = np.polyfit(xy[:, 0], xy[:, 1], 1)
+            x_line = np.linspace(xy[:, 0].min(), xy[:, 0].max(), 100)
+            ax_r.plot(x_line, m_r * x_line + b_r, color="#F44336", lw=2.5)
+        actual_r = np.corrcoef(xy[:, 0], xy[:, 1])[0, 1]
+        strength = "강한" if abs(actual_r) > 0.7 else ("보통" if abs(actual_r) > 0.4 else "약한")
+        direction = "양의" if actual_r > 0.05 else ("음의" if actual_r < -0.05 else "")
+        ax_r.set_title(f"r = {actual_r:.3f} ({strength} {direction} 상관관계)", fontsize=12)
+        ax_r.grid(True, alpha=0.25); ax_r.set_xlabel("x"); ax_r.set_ylabel("y")
+        _show(fig_r)
+
+    with tab3:
+        st.markdown("#### 🎮 나만의 데이터로 회귀 분석!")
+        preset = st.selectbox("예시 데이터 선택", ["공부시간 vs 점수", "온도 vs 아이스크림 판매량", "키 vs 몸무게", "직접 입력"])
+        if preset == "공부시간 vs 점수":
+            x_d = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], dtype=float)
+            y_d = np.array([45, 52, 58, 65, 70, 78, 82, 88, 91, 96], dtype=float)
+            xl, yl = "공부시간 (시간)", "시험 점수"
+        elif preset == "온도 vs 아이스크림 판매량":
+            x_d = np.array([10, 15, 18, 22, 25, 28, 30, 33, 35, 38], dtype=float)
+            y_d = np.array([20, 35, 55, 90, 130, 175, 210, 260, 300, 350], dtype=float)
+            xl, yl = "기온 (°C)", "아이스크림 판매량 (개)"
+        elif preset == "키 vs 몸무게":
+            np.random.seed(5)
+            x_d = np.random.uniform(155, 185, 20)
+            y_d = (x_d - 100) + np.random.normal(0, 5, 20)
+            xl, yl = "키 (cm)", "몸무게 (kg)"
+        else:
+            x_str = st.text_input("x 값들 (쉼표 구분)", "1,2,3,4,5,6,7")
+            y_str = st.text_input("y 값들 (쉼표 구분)", "2,4,5,4,5,7,8")
+            try:
+                x_d = np.array([float(v.strip()) for v in x_str.split(",")])
+                y_d = np.array([float(v.strip()) for v in y_str.split(",")])
+                xl, yl = "x", "y"
+            except Exception:
+                st.error("숫자를 올바르게 입력해주세요!"); return
+
+        if len(x_d) >= 2 and len(x_d) == len(y_d):
+            fig_reg, m_reg, b_reg, r_reg = plot_scatter_regression(x_d, y_d, xl, yl)
+            _show(fig_reg)
+            col1, col2, col3 = st.columns(3)
+            col1.metric("회귀 기울기 a", f"{m_reg:.3f}")
+            col2.metric("y절편 b", f"{b_reg:.3f}")
+            col3.metric("상관계수 r", f"{r_reg:.3f}")
+            pred_x = st.number_input(f"{xl} 값으로 {yl} 예측", value=float(np.mean(x_d)))
+            pred_y = m_reg * pred_x + b_reg
+            st.success(f"예측: {xl}={pred_x:.1f} → {yl} ≈ **{pred_y:.2f}**")
+
+    with tab4:
+        st.markdown("### 🧩 상관관계와 회귀 퀴즈")
+        st.markdown("---")
+        quiz("reg1", "Q1. 상관계수 r = -0.9의 의미는?",
+             ["강한 양의 상관", "약한 상관", "강한 음의 상관", "상관없음"], 2,
+             "r이 -1에 가까울수록 강한 음의 상관관계! x가 커지면 y가 작아져요.")
+        st.markdown("---")
+        quiz("reg2", "Q2. 선형회귀에서 MSE를 최소화하는 방법은?",
+             ["적분", "경사하강법 (미분 활용)", "표준편차 계산", "평균 계산"], 1,
+             "MSE를 파라미터에 대해 미분 → 기울기 반대 방향으로 이동 = 경사하강법!")
+        st.markdown("---")
+        quiz("reg3", "Q3. y = 2x + 3 회귀선에서 x=5일 때 y 예측값은?",
+             ["10", "13", "15", "8"], 1, "y = 2×5 + 3 = 10 + 3 = 13!")
+        st.markdown("---")
+        quiz("reg4", "Q4. 딥러닝(신경망)은 선형회귀와 어떤 관계인가요?",
+             ["완전히 다른 원리", "선형회귀를 수천 개 레이어에 확장한 것", "통계와 무관", "적분만 사용"], 1,
+             "딥러닝은 선형변환 + 비선형 활성화의 조합! 선형회귀가 기초에요.")
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  11장. 벡터
+# ══════════════════════════════════════════════════════════════════════════════
+def page_linalg_vector():
+    st.markdown('<div class="chapter-title">🏹 11장. 벡터 — 방향이 있는 화살표</div>',
+                unsafe_allow_html=True)
+
+    st.markdown("""
+<div class="story-box">
+🗺️ <b>이야기: 보물찾기 지도</b><br>
+"동쪽으로 3칸, 북쪽으로 4칸 이동하면 보물이 있어요!" — 이게 바로 <b>벡터</b>예요!<br>
+벡터는 <b>크기</b>와 <b>방향</b>을 동시에 가진 화살표예요.<br>
+AI에서 단어, 이미지, 사용자 취향 — 모든 것이 벡터로 표현돼요.<br>
+ChatGPT의 "임베딩"도 단어를 1000차원 벡터로 변환하는 거예요! 🗺️
+</div>""", unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs(["📖 개념", "🔍 벡터 연산", "🎮 직접 해보기", "🧩 퀴즈"])
+
+    with tab1:
+        col1, col2 = st.columns(2)
+        col1.markdown("""
+<div class="concept-card">
+<h4>✅ 벡터란?</h4>
+<ul>
+<li><b>스칼라 (Scalar):</b> 크기만 있음 (온도, 나이, 점수)</li>
+<li><b>벡터 (Vector):</b> 크기 + 방향 (속도, 힘, 위치 이동)</li>
+<li><b>표현:</b> v = [3, 4] → x방향으로 3, y방향으로 4</li>
+<li><b>크기(norm):</b> |v| = √(3² + 4²) = √25 = 5</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+        col2.markdown("""
+<div class="concept-card">
+<h4>✅ 벡터 연산</h4>
+<ul>
+<li><b>덧셈:</b> [1,2] + [3,1] = [4,3]</li>
+<li><b>스칼라 곱:</b> 2 × [3,4] = [6,8] (크기 2배, 방향 유지)</li>
+<li><b>내적 (Dot Product):</b> [a,b]·[c,d] = ac + bd<br>
+  → 두 벡터의 유사도 측정!</li>
+<li><b>코사인 유사도:</b> cos θ = (a·b) / (|a||b|)</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="big-formula">내적: a · b = |a||b|cos(θ) &nbsp;&nbsp;→ θ=0°이면 같은 방향, θ=90°이면 수직</div>""",
+                    unsafe_allow_html=True)
+
+        _show(plot_vectors_2d([[3, 4], [1, 2], [4, 6]], ["a=[3,4]", "b=[1,2]", "a+b=[4,6]"],
+                              ["#F44336", "#1976D2", "#4CAF50"], "벡터 덧셈 시각화"))
+
+        st.markdown("""
+<div class="tip-card">
+<b>💡 AI에서 벡터의 역할</b><br>
+• <b>Word2Vec / 임베딩:</b> 단어 → 벡터 (비슷한 단어 = 비슷한 벡터 방향)<br>
+• <b>추천 시스템:</b> 사용자 취향 = 벡터, 내적으로 유사도 계산<br>
+• <b>검색:</b> 질문 벡터와 문서 벡터의 코사인 유사도로 관련 문서 찾기<br>
+• <b>신경망:</b> 각 레이어의 데이터가 벡터로 이동
+</div>""", unsafe_allow_html=True)
+
+    with tab2:
+        st.markdown("#### 🔍 벡터 덧셈과 내적 단계별")
+        st.markdown("""
+<div class="step-card">
+<b>📝 벡터 덧셈 예제</b><br>
+a = [2, 3], b = [4, -1]<br>
+a + b = [2+4, 3+(-1)] = [6, 2]<br>
+→ 각 성분끼리 더해요!
+</div>""", unsafe_allow_html=True)
+        st.markdown("""
+<div class="step-card">
+<b>📝 내적 예제 — 유사도 측정</b><br>
+a = [1, 0] (동쪽만), b = [0, 1] (북쪽만)<br>
+a · b = 1×0 + 0×1 = 0 → 수직! 서로 전혀 다른 방향<br><br>
+a = [1, 0], c = [0.8, 0.6]<br>
+a · c = 1×0.8 + 0×0.6 = 0.8 → 0에 가까울수록 다르고, 1에 가까울수록 비슷!
+</div>""", unsafe_allow_html=True)
+
+    with tab3:
+        st.markdown("#### 🎮 나만의 벡터 탐험!")
+        c1, c2 = st.columns(2)
+        ax_v = c1.slider("벡터 a의 x성분", -5, 5, 3)
+        ay_v = c1.slider("벡터 a의 y성분", -5, 5, 2)
+        bx_v = c2.slider("벡터 b의 x성분", -5, 5, -1)
+        by_v = c2.slider("벡터 b의 y성분", -5, 5, 3)
+
+        sum_v = [ax_v + bx_v, ay_v + by_v]
+        dot_v = ax_v * bx_v + ay_v * by_v
+        mag_a = np.sqrt(ax_v**2 + ay_v**2)
+        mag_b = np.sqrt(bx_v**2 + by_v**2)
+        cos_sim = dot_v / (mag_a * mag_b) if mag_a > 0 and mag_b > 0 else 0
+
+        vecs = [[ax_v, ay_v], [bx_v, by_v], sum_v]
+        labels = [f"a=[{ax_v},{ay_v}]", f"b=[{bx_v},{by_v}]", f"a+b={sum_v}"]
+        colors = ["#F44336", "#1976D2", "#4CAF50"]
+        _show(plot_vectors_2d(vecs, labels, colors))
+
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("|a| (크기)", f"{mag_a:.2f}")
+        col2.metric("|b| (크기)", f"{mag_b:.2f}")
+        col3.metric("a · b (내적)", f"{dot_v:.2f}")
+        col4.metric("코사인 유사도", f"{cos_sim:.3f}")
+
+        angle = np.degrees(np.arccos(np.clip(cos_sim, -1, 1))) if mag_a > 0 and mag_b > 0 else 90
+        msg = f"두 벡터 사이 각도: {angle:.1f}° "
+        if angle < 30: msg += "— 거의 같은 방향이에요! (AI에서 의미가 비슷)"
+        elif angle < 90: msg += "— 비슷한 방향이에요"
+        elif angle < 120: msg += "— 어느 정도 다른 방향이에요"
+        else: msg += "— 반대 방향에 가까워요 (AI에서 의미가 반대)"
+        st.info(msg)
+
+    with tab4:
+        st.markdown("### 🧩 벡터 퀴즈")
+        st.markdown("---")
+        quiz("vec1", "Q1. 벡터 [3, 4]의 크기(norm)는?",
+             ["7", "5", "12", "25"], 1, "√(3²+4²) = √(9+16) = √25 = 5!")
+        st.markdown("---")
+        quiz("vec2", "Q2. 내적(dot product)이 0이면 두 벡터는?",
+             ["같은 방향", "반대 방향", "수직(직교)", "크기가 같음"], 2,
+             "a·b = |a||b|cos(90°) = 0 → 수직! 서로 전혀 다른 방향이에요.")
+        st.markdown("---")
+        quiz("vec3", "Q3. AI에서 단어를 벡터로 변환하는 기술은?",
+             ["미분", "임베딩 (Embedding)", "적분", "분산"], 1,
+             "Word2Vec, BERT 등은 단어를 고차원 벡터로 변환해요. 비슷한 단어 = 비슷한 벡터!")
+        st.markdown("---")
+        quiz("vec4", "Q4. [1,2] + [3,4] = ?",
+             ["[2,6]", "[4,6]", "[3,8]", "[4,8]"], 1, "성분별로 더하면 [1+3, 2+4] = [4, 6]!")
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  12장. 행렬
+# ══════════════════════════════════════════════════════════════════════════════
+def page_linalg_matrix():
+    st.markdown('<div class="chapter-title">🔲 12장. 행렬 — 데이터 변환의 마법</div>',
+                unsafe_allow_html=True)
+
+    st.markdown("""
+<div class="story-box">
+📸 <b>이야기: 사진을 돌리거나 늘리는 마법</b><br>
+사진 편집 앱에서 이미지를 회전하고, 크기를 바꾸고, 반전시킬 수 있어요.<br>
+이런 모든 변환이 <b>행렬 곱셈</b>으로 이루어져요!<br>
+신경망의 각 레이어도 입력 벡터에 <b>가중치 행렬을 곱하는</b> 연산이에요.<br>
+행렬을 이해하면 AI의 내부 동작 원리가 보여요! 🔲
+</div>""", unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs(["📖 개념", "🔍 행렬 연산", "🎮 직접 변환", "🧩 퀴즈"])
+
+    with tab1:
+        col1, col2 = st.columns(2)
+        col1.markdown("""
+<div class="concept-card">
+<h4>✅ 행렬이란?</h4>
+<ul>
+<li><b>행렬 (Matrix):</b> 숫자를 직사각형으로 배열한 것</li>
+<li>m행 × n열 행렬 = m×n 크기</li>
+<li>AI에서 이미지 = 픽셀값 행렬</li>
+<li>AI 가중치 = 수백만 개의 행렬</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+        col2.markdown("""
+<div class="concept-card">
+<h4>✅ 행렬 연산</h4>
+<ul>
+<li><b>덧셈:</b> 같은 위치 원소끼리 더함</li>
+<li><b>스칼라 곱:</b> 모든 원소에 스칼라 곱</li>
+<li><b>행렬 곱 (가장 중요!):</b> A(m×k) × B(k×n) = C(m×n)</li>
+<li><b>전치 (Transpose):</b> 행과 열을 바꿈 A → Aᵀ</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="big-formula">행렬 곱: C[i,j] = Σₖ A[i,k] × B[k,j] &nbsp;&nbsp;→ 신경망의 핵심 연산!</div>""",
+                    unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="step-card">
+<b>📝 2×2 행렬 곱 예제</b><br>
+A = [[1,2],[3,4]], B = [[5,6],[7,8]]<br>
+C[0,0] = 1×5 + 2×7 = 5+14 = 19<br>
+C[0,1] = 1×6 + 2×8 = 6+16 = 22<br>
+C[1,0] = 3×5 + 4×7 = 15+28 = 43<br>
+C[1,1] = 3×6 + 4×8 = 18+32 = 50<br>
+→ C = [[19,22],[43,50]]
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="tip-card">
+<b>💡 신경망에서의 행렬</b><br>
+• 입력 데이터 x = [x₁, x₂, ..., xₙ] (벡터)<br>
+• 가중치 W = 행렬 (수백만 개의 숫자)<br>
+• 레이어 출력 = W × x + b (행렬 곱 + 편향 벡터)<br>
+• 이 과정을 수십~수백 레이어 반복 = 딥러닝!
+</div>""", unsafe_allow_html=True)
+
+    with tab2:
+        st.markdown("#### 🔍 2×2 행렬 연산 계산기")
+        c1, c2 = st.columns(2)
+        c1.markdown("**행렬 A**")
+        a11 = c1.number_input("A[0,0]", value=1.0, step=0.5, key="a11")
+        a12 = c1.number_input("A[0,1]", value=2.0, step=0.5, key="a12")
+        a21 = c1.number_input("A[1,0]", value=0.0, step=0.5, key="a21")
+        a22 = c1.number_input("A[1,1]", value=1.0, step=0.5, key="a22")
+        c2.markdown("**행렬 B**")
+        b11 = c2.number_input("B[0,0]", value=2.0, step=0.5, key="b11")
+        b12 = c2.number_input("B[0,1]", value=0.0, step=0.5, key="b12")
+        b21 = c2.number_input("B[1,0]", value=0.0, step=0.5, key="b21")
+        b22 = c2.number_input("B[1,1]", value=2.0, step=0.5, key="b22")
+
+        A = np.array([[a11, a12], [a21, a22]])
+        B = np.array([[b11, b12], [b21, b22]])
+        C = A @ B
+        det_A = np.linalg.det(A)
+
+        col1, col2, col3 = st.columns(3)
+        col1.markdown(f"""<div class="concept-card" style="text-align:center;">
+<b>A × B =</b><br>
+[[{C[0,0]:.2f}, {C[0,1]:.2f}],<br>
+ [{C[1,0]:.2f}, {C[1,1]:.2f}]]
+</div>""", unsafe_allow_html=True)
+        col2.markdown(f"""<div class="concept-card" style="text-align:center;">
+<b>det(A) =</b><br>
+{det_A:.3f}<br>
+{'(역행렬 존재 ✓)' if abs(det_A) > 0.001 else '(역행렬 없음 ✗)'}
+</div>""", unsafe_allow_html=True)
+        AT = A.T
+        col3.markdown(f"""<div class="concept-card" style="text-align:center;">
+<b>Aᵀ (전치) =</b><br>
+[[{AT[0,0]:.1f}, {AT[0,1]:.1f}],<br>
+ [{AT[1,0]:.1f}, {AT[1,1]:.1f}]]
+</div>""", unsafe_allow_html=True)
+
+    with tab3:
+        st.markdown("#### 🎮 행렬 변환 시각화")
+        transform_type = st.selectbox("변환 종류 선택", [
+            "항등 변환 (변화 없음)",
+            "2배 확대",
+            "x축 반전",
+            "90° 회전",
+            "기울이기 (Shear)",
+            "직접 입력",
+        ])
+        if transform_type == "항등 변환 (변화 없음)":
+            M = np.array([[1.0, 0.0], [0.0, 1.0]])
+        elif transform_type == "2배 확대":
+            M = np.array([[2.0, 0.0], [0.0, 2.0]])
+        elif transform_type == "x축 반전":
+            M = np.array([[1.0, 0.0], [0.0, -1.0]])
+        elif transform_type == "90° 회전":
+            M = np.array([[0.0, -1.0], [1.0, 0.0]])
+        elif transform_type == "기울이기 (Shear)":
+            M = np.array([[1.0, 1.0], [0.0, 1.0]])
+        else:
+            cc1, cc2 = st.columns(2)
+            m11 = cc1.number_input("M[0,0]", value=1.0, step=0.5, key="m11")
+            m12 = cc1.number_input("M[0,1]", value=0.0, step=0.5, key="m12")
+            m21 = cc2.number_input("M[1,0]", value=0.0, step=0.5, key="m21")
+            m22 = cc2.number_input("M[1,1]", value=1.0, step=0.5, key="m22")
+            M = np.array([[m11, m12], [m21, m22]])
+
+        _show(plot_matrix_transform(M, f"행렬 변환: {M.tolist()}"))
+        det_M = np.linalg.det(M)
+        st.info(f"행렬식 det(M) = {det_M:.3f} → 변환 후 넓이는 원본의 {abs(det_M):.2f}배 {'(반전 있음)' if det_M < 0 else ''}")
+
+    with tab4:
+        st.markdown("### 🧩 행렬 퀴즈")
+        st.markdown("---")
+        quiz("mat1", "Q1. 행렬 곱 A(2×3) × B(3×4) 의 결과 크기는?",
+             ["2×4", "3×3", "2×3", "4×2"], 0, "A(m×k) × B(k×n) = C(m×n) → 2×4!")
+        st.markdown("---")
+        quiz("mat2", "Q2. 신경망의 각 레이어에서 핵심 연산은?",
+             ["미분", "적분", "행렬 곱", "벡터 덧셈만"], 2,
+             "레이어 출력 = 가중치 행렬 W × 입력 벡터 x + 편향 b! 행렬 곱이 핵심이에요.")
+        st.markdown("---")
+        quiz("mat3", "Q3. 단위 행렬(Identity Matrix) I와 곱하면?",
+             ["0이 됨", "원래 행렬이 됨", "전치됨", "역행렬이 됨"], 1,
+             "A × I = I × A = A! 단위 행렬은 1과 같은 역할을 해요.")
+        st.markdown("---")
+        quiz("mat4", "Q4. 이미지를 90° 회전시키는 변환 행렬은?",
+             ["[[1,0],[0,1]]", "[[0,-1],[1,0]]", "[[2,0],[0,2]]", "[[1,1],[0,1]]"], 1,
+             "회전 행렬 [[cos90°,-sin90°],[sin90°,cos90°]] = [[0,-1],[1,0]]!")
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  13장. 고유값과 고유벡터
+# ══════════════════════════════════════════════════════════════════════════════
+def page_linalg_eigen():
+    st.markdown('<div class="chapter-title">🌟 13장. 고유값과 고유벡터 — AI의 숨겨진 보석</div>',
+                unsafe_allow_html=True)
+
+    st.markdown("""
+<div class="story-box">
+🔭 <b>이야기: 변환해도 방향이 안 바뀌는 마법의 벡터</b><br>
+어떤 행렬로 변환해도 <b>방향은 그대로, 크기만 바뀌는</b> 특별한 벡터가 있어요.<br>
+이것이 <b>고유벡터(Eigenvector)</b>이고, 크기가 얼마나 바뀌는지가 <b>고유값(Eigenvalue)</b>이에요.<br>
+PCA(주성분 분석), 추천 시스템, 구글의 PageRank — 모두 고유값 분해를 사용해요!<br>
+데이터의 가장 중요한 방향을 찾는 AI의 핵심 도구예요 🌟
+</div>""", unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs(["📖 개념", "🔍 고유값 탐구", "🎮 PCA 체험", "🧩 퀴즈"])
+
+    with tab1:
+        col1, col2 = st.columns(2)
+        col1.markdown("""
+<div class="concept-card">
+<h4>✅ 고유값/고유벡터 정의</h4>
+<ul>
+<li><b>정의:</b> Av = λv<br>
+  행렬 A를 곱해도 방향 불변!</li>
+<li><b>v:</b> 고유벡터 (방향 유지)</li>
+<li><b>λ (람다):</b> 고유값 (크기 변화 비율)</li>
+<li>λ > 1: 늘어남 / λ < 1: 줄어듦<br>
+  λ < 0: 반전!</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+        col2.markdown("""
+<div class="concept-card">
+<h4>✅ 왜 중요한가?</h4>
+<ul>
+<li><b>PCA:</b> 데이터의 주요 방향 찾기 → 차원 축소</li>
+<li><b>SVD:</b> 추천 시스템, 이미지 압축</li>
+<li><b>PageRank:</b> 구글이 웹페이지 중요도 계산</li>
+<li><b>진동 분석:</b> 공명 주파수 = 고유값</li>
+</ul>
+</div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="big-formula">Av = λv &nbsp;&nbsp;→ (A - λI)v = 0 &nbsp;&nbsp;→ det(A - λI) = 0 으로 λ 계산</div>""",
+                    unsafe_allow_html=True)
+
+        st.markdown("""
+<div class="tip-card">
+<b>💡 PCA (주성분 분석) — AI의 필수 전처리</b><br>
+• 100개의 특성(feature)을 가진 데이터 → 가장 중요한 2~3개 방향으로 압축<br>
+• 각 방향 = 데이터 분산이 최대인 방향 = 공분산 행렬의 <b>고유벡터</b><br>
+• 각 방향의 중요도 = <b>고유값</b> (클수록 중요)<br>
+• 얼굴 인식, 자연어 처리, 이상 탐지에 사용!
+</div>""", unsafe_allow_html=True)
+
+        M_ex = np.array([[3.0, 1.0], [1.0, 3.0]])
+        fig_ev = plot_eigenvectors(M_ex)
+        if fig_ev: _show(fig_ev)
+
+    with tab2:
+        st.markdown("#### 🔍 행렬의 고유값 직접 계산")
+        c1, c2 = st.columns(2)
+        e11 = c1.number_input("M[0,0]", value=3.0, step=0.5, key="e11")
+        e12 = c1.number_input("M[0,1]", value=1.0, step=0.5, key="e12")
+        e21 = c2.number_input("M[1,0]", value=1.0, step=0.5, key="e21")
+        e22 = c2.number_input("M[1,1]", value=3.0, step=0.5, key="e22")
+
+        M_user = np.array([[e11, e12], [e21, e22]])
+        eigenvalues, eigenvectors = np.linalg.eig(M_user)
+
+        st.markdown(f"""
+<div class="concept-card">
+<b>행렬 M = [[{e11}, {e12}], [{e21}, {e22}]]의 고유값 분해</b><br><br>
+""" + "".join([
+            f"고유값 λ{i+1} = <span class='highlight'>{val.real:.3f}</span> &nbsp;|&nbsp; "
+            f"고유벡터 v{i+1} = [{eigenvectors[0,i].real:.3f}, {eigenvectors[1,i].real:.3f}]<br>"
+            for i, val in enumerate(eigenvalues)
+        ]) + """<br>
+검증: M × v1 = λ1 × v1 ?
+</div>""", unsafe_allow_html=True)
+
+        fig_ev2 = plot_eigenvectors(M_user)
+        if fig_ev2: _show(fig_ev2)
+
+        v1 = eigenvectors[:, 0].real
+        Mv1 = M_user @ v1
+        lambda1 = eigenvalues[0].real
+        st.info(f"검증: M × v1 = [{Mv1[0]:.3f}, {Mv1[1]:.3f}], λ1 × v1 = [{lambda1*v1[0]:.3f}, {lambda1*v1[1]:.3f}] ✓")
+
+    with tab3:
+        st.markdown("#### 🎮 PCA (주성분 분석) 체험")
+        st.write("2차원 데이터에서 가장 중요한 방향(주성분)을 고유벡터로 찾아봐요!")
+
+        data_type = st.selectbox("데이터 종류", ["길쭉한 분포", "둥근 분포", "사선 분포"])
+        np.random.seed(42)
+        if data_type == "길쭉한 분포":
+            cov = [[4, 0], [0, 0.5]]
+        elif data_type == "둥근 분포":
+            cov = [[2, 0], [0, 2]]
+        else:
+            cov = [[2, 1.5], [1.5, 2]]
+
+        data_pca = np.random.multivariate_normal([0, 0], cov, 100)
+        cov_matrix = np.cov(data_pca.T)
+        eigenvalues_pca, eigenvectors_pca = np.linalg.eig(cov_matrix)
+        order = np.argsort(eigenvalues_pca)[::-1]
+        eigenvalues_pca = eigenvalues_pca[order]
+        eigenvectors_pca = eigenvectors_pca[:, order]
+
+        fig_pca, axes_pca = plt.subplots(1, 2, figsize=(12, 5))
+        ax1 = axes_pca[0]
+        ax1.scatter(data_pca[:, 0], data_pca[:, 1], alpha=0.5, color="#1976D2", s=30)
+        scale = 2.5
+        for i, (val, vec) in enumerate(zip(eigenvalues_pca, eigenvectors_pca.T)):
+            col_ev = ["#F44336", "#4CAF50"][i]
+            ax1.annotate("", xy=(vec[0]*val*scale/eigenvalues_pca[0], vec[1]*val*scale/eigenvalues_pca[0]),
+                         xytext=(0, 0),
+                         arrowprops=dict(arrowstyle="->", color=col_ev, lw=3))
+            ax1.text(vec[0]*val*scale/eigenvalues_pca[0]*1.1,
+                     vec[1]*val*scale/eigenvalues_pca[0]*1.1,
+                     f"PC{i+1}\n(λ={val:.2f})", color=col_ev, fontweight="bold", fontsize=11)
+        ax1.set_title("원본 데이터 + 주성분 방향", fontsize=11)
+        ax1.grid(True, alpha=0.2); ax1.set_aspect("equal")
+        ax1.set_xlabel("x"); ax1.set_ylabel("y")
+
+        projected = data_pca @ eigenvectors_pca[:, 0]
+        ax2 = axes_pca[1]
+        ax2.hist(projected, bins=20, color="#9C27B0", alpha=0.7, edgecolor="white")
+        ax2.set_title(f"1차원으로 투영 (PC1만 사용)\n분산 보존율: {eigenvalues_pca[0]/sum(eigenvalues_pca)*100:.1f}%", fontsize=11)
+        ax2.set_xlabel("PC1 방향 값"); ax2.set_ylabel("빈도")
+        ax2.grid(True, alpha=0.25)
+        plt.tight_layout(); _show(fig_pca)
+
+        col1, col2 = st.columns(2)
+        col1.metric("PC1 분산 비율", f"{eigenvalues_pca[0]/sum(eigenvalues_pca)*100:.1f}%")
+        col2.metric("PC2 분산 비율", f"{eigenvalues_pca[1]/sum(eigenvalues_pca)*100:.1f}%")
+        st.info(f"PC1 방향만으로 데이터의 {eigenvalues_pca[0]/sum(eigenvalues_pca)*100:.1f}%를 설명할 수 있어요!")
+
+    with tab4:
+        st.markdown("### 🧩 고유값/고유벡터 퀴즈")
+        st.markdown("---")
+        quiz("eig1", "Q1. Av = λv 에서 λ(람다)는 무엇인가요?",
+             ["행렬", "고유벡터", "고유값", "전치"], 2,
+             "λ(람다) = 고유값! 고유벡터의 크기가 얼마나 변하는지를 나타내요.")
+        st.markdown("---")
+        quiz("eig2", "Q2. PCA에서 '첫 번째 주성분(PC1)'이란?",
+             ["평균 방향", "분산이 가장 큰 방향 (최대 고유값의 고유벡터)", "수직 방향", "무작위 방향"], 1,
+             "PC1 = 공분산 행렬의 최대 고유값에 대응하는 고유벡터! 데이터가 가장 퍼진 방향이에요.")
+        st.markdown("---")
+        quiz("eig3", "Q3. 단위 행렬 I의 모든 고유값은?",
+             ["0", "1", "-1", "무한대"], 1,
+             "Iv = 1×v → 모든 벡터가 고유벡터이고 고유값은 1이에요!")
+        st.markdown("---")
+        quiz("eig4", "Q4. 고유값 분해(SVD)가 사용되는 AI 응용은?",
+             ["경사하강법", "추천 시스템과 이미지 압축", "평균 계산", "확률 계산"], 1,
+             "SVD(특이값 분해)는 넷플릭스 추천, 이미지 압축, 자연어 처리에 핵심적으로 사용돼요!")
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  AI 튜터
 # ══════════════════════════════════════════════════════════════════════════════
 def page_ai_tutor():
@@ -1450,8 +2430,8 @@ def page_ai_tutor():
     st.markdown("""
 <div class="story-box">
 🤖 <b>gemma4 AI 튜터에게 무엇이든 물어보세요!</b><br>
-수직선, 함수, 기울기, 미분, 적분 — 어떤 것도 OK!<br>
-쉬운 말로 친절하게 설명해줘요 😊
+미적분, 통계학, 선형대수학 — 어떤 것도 OK!<br>
+각 개념이 AI/딥러닝에 어떻게 쓰이는지도 알려줘요 😊
 </div>""", unsafe_allow_html=True)
 
     if not OLLAMA_AVAILABLE:
@@ -1466,10 +2446,11 @@ def page_ai_tutor():
 
     st.markdown("#### 💬 빠른 질문")
     quick=[
-        "수직선이 뭐야?","함수를 쉽게 설명해줘",
-        "기울기가 뭐야?","미분을 피자로 설명해줘",
-        "적분이 뭐야?","미분과 적분 차이가 뭐야?",
-        "극한(limit)이 뭔지 알려줘","AI는 미분을 어떻게 쓸까?",
+        "수직선이 뭐야?","미분을 피자로 설명해줘",
+        "적분이 뭐야?","AI는 미분을 어떻게 쓸까?",
+        "평균과 분산의 차이는?","정규분포가 뭔지 쉽게 설명해줘",
+        "벡터가 뭐야?","행렬 곱이 AI에서 왜 중요해?",
+        "고유값과 고유벡터를 쉽게 설명해줘","PCA가 뭐야?",
     ]
     cols_q=st.columns(4)
     for i,q in enumerate(quick):
@@ -1509,22 +2490,43 @@ def sidebar():
         st.markdown("""
 <div style="text-align:center;padding:10px 0 16px;">
 <div style="font-size:2.4rem;">🧮</div>
-<div style="font-size:1.15rem;font-weight:900;color:#FFD700;">미적분 탐험대</div>
-<div style="font-size:.8rem;color:#aaa;">수포자도 OK!</div>
+<div style="font-size:1.15rem;font-weight:900;color:#FFD700;">수학 탐험대</div>
+<div style="font-size:.8rem;color:#aaa;">미적분 · 통계 · 선형대수</div>
 </div>""", unsafe_allow_html=True)
 
         selected=st.radio("챕터",list(CHAPTERS.keys()),label_visibility="collapsed")
 
         st.markdown("---")
-        st.markdown("#### 📊 학습 진도")
-        chapters_track=["📏 1. 수직선","📊 2. 함숫값","📐 3. 기울기",
+        calculus_track=["📏 1. 수직선","📊 2. 함숫값","📐 3. 기울기",
                          "🎢 4. 이차함수","⚡ 5. 미분은 기울기다",
                          "🏞️ 6. 적분은 넓이다","🧠 7. AI와 미적분"]
+        stat_track=["📉 8. 평균과 분산","🔔 9. 확률분포","🔗 10. 상관관계와 회귀"]
+        la_track=["🏹 11. 벡터","🔲 12. 행렬","🌟 13. 고유값과 고유벡터"]
+        all_track=calculus_track+stat_track+la_track
         visited=st.session_state.get("visited_chapters",set())
-        done=sum(1 for c in chapters_track if c in visited)
-        st.progress(done/7,text=f"{done}/7 완료")
-        for ch in chapters_track:
+
+        st.markdown("#### ➕ 미적분")
+        done_c=sum(1 for c in calculus_track if c in visited)
+        st.progress(done_c/7,text=f"{done_c}/7 완료")
+        for ch in calculus_track:
             st.markdown(f"{'✅' if ch in visited else '⬜'} {ch}")
+
+        st.markdown("#### 📊 통계학")
+        done_s=sum(1 for c in stat_track if c in visited)
+        st.progress(done_s/3,text=f"{done_s}/3 완료")
+        for ch in stat_track:
+            st.markdown(f"{'✅' if ch in visited else '⬜'} {ch}")
+
+        st.markdown("#### 🔲 선형대수")
+        done_l=sum(1 for c in la_track if c in visited)
+        st.progress(done_l/3,text=f"{done_l}/3 완료")
+        for ch in la_track:
+            st.markdown(f"{'✅' if ch in visited else '⬜'} {ch}")
+
+        st.markdown("---")
+        total_done=done_c+done_s+done_l
+        st.markdown(f"**전체: {total_done}/13 완료**")
+        st.progress(total_done/13)
 
         st.markdown("---")
         st.markdown("#### 🤖 AI 상태")
@@ -1544,6 +2546,12 @@ def main():
         "function_value":page_function_value,"slope":page_slope,
         "quadratic":page_quadratic,"derivative":page_derivative,
         "integral":page_integral,"ai_calculus":page_ai_calculus,
+        "stat_descriptive":page_stat_descriptive,
+        "stat_distribution":page_stat_distribution,
+        "stat_regression":page_stat_regression,
+        "linalg_vector":page_linalg_vector,
+        "linalg_matrix":page_linalg_matrix,
+        "linalg_eigen":page_linalg_eigen,
         "ai_tutor":page_ai_tutor,
     }
     pages[CHAPTERS[selected]]()

@@ -58,6 +58,10 @@ html,body,[class*="css"]{font-family:'Noto Sans KR',sans-serif;}
   margin:10px 0;border-left:4px solid #1976D2;color:#1a237e;}
 .summary-box{background:#fff3e0;border:2px solid #FF9800;border-radius:14px;
   padding:18px;margin:14px 0;color:#333;}
+.kid-box{background:linear-gradient(135deg,#fffde7,#fff8e1);border:3px solid #FFC107;
+  border-radius:16px;padding:20px 24px;margin:12px 0;font-size:1.15rem;line-height:2.2;color:#333;}
+.ai-connect{background:linear-gradient(135deg,#e3f2fd,#e8eaf6);border:2px solid #3F51B5;
+  border-radius:14px;padding:16px;margin:10px 0;color:#1a237e;font-size:1rem;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -1482,97 +1486,298 @@ AI에서 적분은:<br>
              "f'(x)=2x=0 → x=0이 최솟값. 미분값=0인 점이 꼭짓점!")
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  통계학 그래프 헬퍼
+#  통계학 그래프 헬퍼 (초등학생 눈높이)
 # ══════════════════════════════════════════════════════════════════════════════
 
-def plot_histogram_with_stats(data, title="히스토그램"):
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
-    mean_v = np.mean(data); median_v = np.median(data); std_v = np.std(data)
+def plot_seesaw_mean(data, title="평균은 시소의 균형점!"):
+    """데이터 점들과 평균을 시소 비유로 시각화"""
+    mean_v = np.mean(data)
+    data_s = sorted(data)
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+
+    # 왼쪽: 점 그래프 + 평균선
     ax = axes[0]
-    ax.hist(data, bins=15, color="#4CAF50", alpha=0.7, edgecolor="white", linewidth=0.8)
-    ax.axvline(mean_v, color="#F44336", lw=2.5, linestyle="--", label=f"평균={mean_v:.2f}")
-    ax.axvline(median_v, color="#1976D2", lw=2.5, linestyle="-.", label=f"중앙값={median_v:.2f}")
-    ax.set_title(title, fontsize=12); ax.legend(fontsize=10); ax.grid(True, alpha=0.25)
+    y_jitter = np.random.RandomState(0).uniform(-0.15, 0.15, len(data))
+    ax.scatter(data, y_jitter, s=100, color="#4CAF50", alpha=0.8, zorder=5)
+    ax.axvline(mean_v, color="#F44336", lw=4, linestyle="--", label=f"평균 = {mean_v:.1f}", zorder=6)
+    ax.set_ylim(-0.6, 0.9); ax.set_yticks([])
+    ax.set_xlabel("값", fontsize=12); ax.set_title("점들과 평균", fontsize=13)
+    ax.legend(fontsize=12); ax.grid(True, alpha=0.2, axis="x")
+    # 화살표로 평균까지 거리 표시
+    for v in data[:min(5, len(data))]:
+        ax.annotate("", xy=(mean_v, 0.5), xytext=(v, 0.5),
+                    arrowprops=dict(arrowstyle="->", color="#FF9800", lw=1.5, alpha=0.7))
+    ax.text(mean_v, 0.75, "← 모두 이쪽으로\n균형 잡아요!", ha="center", fontsize=10,
+            color="#F44336", fontweight="bold")
+
+    # 오른쪽: 히스토그램 + 통계 표
+    ax2 = axes[1]
+    ax2.hist(data, bins=min(12, len(data)//2+2), color="#4CAF50", alpha=0.7, edgecolor="white", lw=0.8)
+    ax2.axvline(mean_v, color="#F44336", lw=3, linestyle="--", label=f"평균={mean_v:.1f}")
+    ax2.axvline(np.median(data), color="#1976D2", lw=2.5, linestyle="-.", label=f"중앙값={np.median(data):.1f}")
+    ax2.set_title(title, fontsize=12); ax2.legend(fontsize=10)
+    ax2.set_xlabel("값"); ax2.set_ylabel("명수(빈도)"); ax2.grid(True, alpha=0.25)
+    std_v = np.std(data)
+    ax2.axvspan(mean_v - std_v, mean_v + std_v, alpha=0.12, color="#FF9800",
+                label=f"평균±표준편차")
+    plt.tight_layout(); return fig
+
+def plot_spread_comparison():
+    """두 데이터셋 비교 — 퍼짐의 차이"""
+    group_a = [5, 5, 5, 5, 5, 5]
+    group_b = [1, 3, 5, 5, 7, 9]
+    group_c = [0, 1, 5, 5, 9, 10]
+    fig, axes = plt.subplots(1, 3, figsize=(13, 4.5))
+    for ax, grp, ttl, col, std_lbl in zip(
+        axes,
+        [group_a, group_b, group_c],
+        ["모두 똑같아요\n(표준편차=0)", "조금 퍼져요\n(표준편차≈2.6)", "많이 퍼져요!\n(표준편차≈3.8)"],
+        ["#4CAF50", "#FF9800", "#F44336"],
+        ["표준편차 = 0 😊", "표준편차 ≈ 2.6 😐", "표준편차 ≈ 3.8 😮"],
+    ):
+        y = np.random.RandomState(1).uniform(-0.2, 0.2, len(grp))
+        ax.scatter(grp, y, s=200, color=col, alpha=0.85, zorder=5)
+        ax.axvline(np.mean(grp), color="#1a237e", lw=3, linestyle="--", label=f"평균={np.mean(grp):.0f}")
+        ax.set_xlim(-1, 12); ax.set_ylim(-0.6, 0.8)
+        ax.set_yticks([]); ax.set_xlabel("값", fontsize=11)
+        ax.set_title(ttl, fontsize=12, color=col, fontweight="bold")
+        ax.text(5.5, 0.6, std_lbl, ha="center", fontsize=11, color=col, fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.4", fc="white", ec=col, lw=1.5))
+        ax.legend(fontsize=10); ax.grid(True, alpha=0.2, axis="x")
+    plt.suptitle("평균은 같아도(=5) 퍼짐이 달라요!", fontsize=14, fontweight="bold", color="#1a237e")
+    plt.tight_layout(); return fig
+
+def plot_histogram_with_stats(data, title="내 데이터 분석"):
+    mean_v = np.mean(data); median_v = np.median(data); std_v = np.std(data)
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+    ax = axes[0]
+    ax.hist(data, bins=min(15, max(5, len(data)//3)), color="#4CAF50", alpha=0.7, edgecolor="white", lw=0.8)
+    ax.axvline(mean_v, color="#F44336", lw=3, linestyle="--", label=f"평균={mean_v:.1f}")
+    ax.axvline(median_v, color="#1976D2", lw=2.5, linestyle="-.", label=f"중앙값={median_v:.1f}")
+    ax.axvspan(mean_v - std_v, mean_v + std_v, alpha=0.12, color="#FF9800",
+                label=f"±표준편차({std_v:.1f})")
+    ax.set_title(title, fontsize=12); ax.legend(fontsize=9); ax.grid(True, alpha=0.25)
     ax.set_xlabel("값"); ax.set_ylabel("빈도")
     ax2 = axes[1]; ax2.axis("off")
-    stats_text = [
-        ["통계량", "값"],
-        ["평균 (Mean)", f"{mean_v:.3f}"],
-        ["중앙값 (Median)", f"{median_v:.3f}"],
-        ["표준편차 (Std)", f"{std_v:.3f}"],
-        ["분산 (Variance)", f"{std_v**2:.3f}"],
-        ["최솟값", f"{np.min(data):.3f}"],
-        ["최댓값", f"{np.max(data):.3f}"],
+    rows = [
+        ["📊 평균 (Mean)", f"{mean_v:.2f}", "가장 대표적인 값"],
+        ["📍 중앙값 (Median)", f"{median_v:.2f}", "딱 가운데 값"],
+        ["📏 표준편차 (Std)", f"{std_v:.2f}", "얼마나 퍼졌나"],
+        ["↔ 범위", f"{np.max(data)-np.min(data):.2f}", "최댓값-최솟값"],
+        ["⬇ 최솟값", f"{np.min(data):.2f}", ""],
+        ["⬆ 최댓값", f"{np.max(data):.2f}", ""],
     ]
-    t = ax2.table(cellText=stats_text[1:], colLabels=stats_text[0], loc="center", cellLoc="center")
-    t.auto_set_font_size(False); t.set_fontsize(12); t.scale(1.5, 1.8)
+    t = ax2.table(cellText=rows, colLabels=["통계량", "값", "뜻"], loc="center", cellLoc="center")
+    t.auto_set_font_size(False); t.set_fontsize(11); t.scale(1.4, 1.75)
     for (r, c), cell in t.get_celld().items():
-        if r == 0: cell.set_facecolor("#1976D2"); cell.set_text_props(color="white", fontweight="bold")
-        elif r % 2 == 0: cell.set_facecolor("#e3f2fd")
-    ax2.set_title("기술통계 요약", fontsize=12)
+        if r == 0: cell.set_facecolor("#1976D2"); cell.set_text_props(color="w", fontweight="bold")
+        elif r % 2 == 0: cell.set_facecolor("#e8f5e9")
+    ax2.set_title("통계 요약표", fontsize=12)
     plt.tight_layout(); return fig
 
 def plot_normal_distribution(mu=0, sigma=1):
     from scipy.stats import norm
-    fig, ax = plt.subplots(figsize=(9, 5))
-    x = np.linspace(mu - 4*sigma, mu + 4*sigma, 400)
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    x = np.linspace(mu - 4.2*sigma, mu + 4.2*sigma, 400)
     y = norm.pdf(x, mu, sigma)
-    ax.plot(x, y, color="#1976D2", lw=2.8, label=f"N(μ={mu}, σ={sigma})")
-    for k, col, lbl in [(1,"#4CAF50","68%"),(2,"#FF9800","95%"),(3,"#F44336","99.7%")]:
-        x_fill = np.linspace(mu - k*sigma, mu + k*sigma, 300)
-        ax.fill_between(x_fill, norm.pdf(x_fill, mu, sigma), alpha=0.18, color=col, label=f"μ±{k}σ ({lbl})")
-    ax.axvline(mu, color="#9C27B0", lw=2, linestyle="--", label=f"μ={mu}")
-    ax.set_title(f"정규분포 N(μ={mu}, σ={sigma})", fontsize=13)
-    ax.legend(fontsize=10); ax.grid(True, alpha=0.25)
-    ax.set_xlabel("값"); ax.set_ylabel("확률밀도")
+    ax.plot(x, y, color="#1976D2", lw=3)
+    fills = [(1,"#4CAF50","68%\n(대부분)"),(2,"#FF9800","95%"),(3,"#F44336","99.7%")]
+    for k, col, lbl in reversed(fills):
+        xf = np.linspace(mu - k*sigma, mu + k*sigma, 300)
+        ax.fill_between(xf, norm.pdf(xf, mu, sigma), alpha=0.22, color=col)
+        ax.annotate("", xy=(mu + k*sigma, norm.pdf(mu + k*sigma, mu, sigma)*0.5),
+                    xytext=(mu + k*sigma + sigma*0.5, norm.pdf(mu + k*sigma, mu, sigma)*0.5 + 0.02),
+                    arrowprops=dict(arrowstyle="->", color=col, lw=1.5))
+        ax.text(mu + k*sigma + sigma*0.5, norm.pdf(mu + k*sigma, mu, sigma)*0.5 + 0.025,
+                lbl, fontsize=10, color=col, fontweight="bold")
+    ax.axvline(mu, color="#9C27B0", lw=2.5, linestyle="--")
+    ax.text(mu, max(y)*1.05, f"평균\nμ={mu}", ha="center", fontsize=12, color="#9C27B0", fontweight="bold")
+    ax.text(mu - sigma, max(y)*0.6, f"σ={sigma}\n(1칸)", ha="center", fontsize=10, color="#555")
+    ax.annotate("", xy=(mu, max(y)*0.55), xytext=(mu - sigma, max(y)*0.55),
+                arrowprops=dict(arrowstyle="<->", color="#555", lw=1.5))
+    ax.set_title(f"🔔 종 모양 분포 (정규분포)  평균={mu}, 표준편차={sigma}", fontsize=13)
+    ax.set_xlabel("값 (예: 시험 점수, 키, 몸무게 등)", fontsize=11)
+    ax.set_ylabel("이 값이 나올 확률", fontsize=11)
+    ax.grid(True, alpha=0.2); ax.set_ylim(0, max(y)*1.18)
     return fig
 
 def plot_scatter_regression(x_data, y_data, x_label="x", y_label="y"):
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ax.scatter(x_data, y_data, color="#1976D2", s=70, alpha=0.8, zorder=5, label="데이터")
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
     m, b = np.polyfit(x_data, y_data, 1)
-    x_line = np.linspace(min(x_data), max(x_data), 100)
-    ax.plot(x_line, m * x_line + b, color="#F44336", lw=2.5, label=f"회귀선: y={m:.2f}x+{b:.2f}")
     r = np.corrcoef(x_data, y_data)[0, 1]
-    ax.set_title(f"산점도 & 회귀선 (상관계수 r={r:.3f})", fontsize=12)
-    ax.legend(fontsize=10); ax.grid(True, alpha=0.25)
-    ax.set_xlabel(x_label); ax.set_ylabel(y_label)
-    return fig, m, b, np.corrcoef(x_data, y_data)[0, 1]
+    x_line = np.linspace(min(x_data), max(x_data), 100)
+    y_pred = m * x_line + b
+
+    ax1 = axes[0]
+    ax1.scatter(x_data, y_data, color="#1976D2", s=90, alpha=0.8, zorder=5, label="실제 데이터")
+    ax1.plot(x_line, y_pred, color="#F44336", lw=3, label=f"예측선: y={m:.2f}x+{b:.2f}", zorder=4)
+    # 오차 화살표 (처음 5개만)
+    for xi, yi in zip(list(x_data)[:5], list(y_data)[:5]):
+        yi_pred = m * xi + b
+        ax1.plot([xi, xi], [yi, yi_pred], color="#FF9800", lw=1.5, alpha=0.7)
+    ax1.set_title(f"산점도 & 예측선 (r={r:.2f})", fontsize=12)
+    ax1.legend(fontsize=10); ax1.grid(True, alpha=0.25)
+    ax1.set_xlabel(x_label); ax1.set_ylabel(y_label)
+
+    ax2 = axes[1]; ax2.axis("off")
+    strength = "아주 강해요 💪" if abs(r) > 0.8 else ("보통이에요" if abs(r) > 0.5 else "약해요")
+    direction = "✅ 양의 상관\n(x↑ → y↑)" if r > 0.05 else ("❌ 음의 상관\n(x↑ → y↓)" if r < -0.05 else "무관계")
+    rows = [
+        ["상관계수 r", f"{r:.3f}"],
+        ["관계 강도", strength],
+        ["방향", direction],
+        ["기울기 a", f"{m:.3f}"],
+        ["절편 b", f"{b:.3f}"],
+    ]
+    t = ax2.table(cellText=rows, colLabels=["항목", "결과"], loc="center", cellLoc="center")
+    t.auto_set_font_size(False); t.set_fontsize(12); t.scale(1.5, 2.0)
+    for (row, c), cell in t.get_celld().items():
+        if row == 0: cell.set_facecolor("#F44336"); cell.set_text_props(color="w", fontweight="bold")
+        elif row % 2 == 0: cell.set_facecolor("#fff3e0")
+    ax2.set_title("회귀 분석 결과", fontsize=12)
+    plt.tight_layout()
+    return fig, m, b, r
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  선형대수학 그래프 헬퍼
+#  선형대수학 그래프 헬퍼 (초등학생 눈높이)
 # ══════════════════════════════════════════════════════════════════════════════
+
+def plot_treasure_map_vector(vx=3, vy=4):
+    """보물찾기 지도 스타일의 벡터 시각화"""
+    fig, ax = plt.subplots(figsize=(8, 8))
+    # 격자 배경
+    for i in range(-1, 7):
+        ax.axhline(i, color="#e0e0e0", lw=0.8); ax.axvline(i, color="#e0e0e0", lw=0.8)
+    ax.set_facecolor("#f9f9e8")
+    # 출발점
+    ax.plot(0, 0, "s", color="#1976D2", markersize=18, zorder=6)
+    ax.text(0, 0, "🏠", ha="center", va="center", fontsize=14)
+    # 도착점(보물)
+    ax.plot(vx, vy, "*", color="#FFD700", markersize=28, zorder=6)
+    ax.text(vx, vy, "💎", ha="center", va="center", fontsize=13)
+    # 벡터 화살표
+    ax.annotate("", xy=(vx, vy), xytext=(0, 0),
+                arrowprops=dict(arrowstyle="->", color="#F44336", lw=4))
+    # x 이동
+    ax.annotate("", xy=(vx, 0), xytext=(0, 0),
+                arrowprops=dict(arrowstyle="->", color="#4CAF50", lw=2.5,
+                                connectionstyle="arc3,rad=0"))
+    ax.text(vx/2, -0.5, f"동쪽으로 {vx}칸 →", ha="center", fontsize=13, color="#4CAF50", fontweight="bold")
+    # y 이동
+    ax.annotate("", xy=(vx, vy), xytext=(vx, 0),
+                arrowprops=dict(arrowstyle="->", color="#1976D2", lw=2.5))
+    ax.text(vx + 0.3, vy/2, f"북쪽으로\n{vy}칸 ↑", ha="left", fontsize=13, color="#1976D2", fontweight="bold")
+    # 크기
+    mag = np.sqrt(vx**2 + vy**2)
+    ax.text(vx/2 - 0.5, vy/2 + 0.3,
+            f"직선거리\n= √({vx}²+{vy}²)\n= {mag:.1f}칸",
+            ha="center", fontsize=12, color="#F44336", fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.4", fc="white", ec="#F44336", lw=1.5))
+    ax.set_xlim(-0.7, max(vx+1.5, 5)); ax.set_ylim(-1, max(vy+1.5, 5))
+    ax.set_xlabel("동쪽 (x)  →", fontsize=12); ax.set_ylabel("북쪽 (y)  ↑", fontsize=12)
+    ax.set_title(f"벡터 [{vx}, {vy}] = 동쪽으로 {vx}칸, 북쪽으로 {vy}칸!", fontsize=13)
+    return fig
 
 def plot_vectors_2d(vectors, labels, colors, title="벡터"):
     fig, ax = plt.subplots(figsize=(7, 7))
-    ax.axhline(0, color="#bbb", lw=0.8); ax.axvline(0, color="#bbb", lw=0.8)
-    lim = max(max(abs(v[0]), abs(v[1])) for v in vectors) * 1.4 + 1
+    for i in range(-6, 7):
+        ax.axhline(i, color="#f0f0f0", lw=0.6); ax.axvline(i, color="#f0f0f0", lw=0.6)
+    ax.axhline(0, color="#bbb", lw=1.2); ax.axvline(0, color="#bbb", lw=1.2)
+    lim = max(max(abs(v[0]), abs(v[1])) for v in vectors) * 1.45 + 1
     ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim)
     for v, lbl, col in zip(vectors, labels, colors):
         ax.annotate("", xy=(v[0], v[1]), xytext=(0, 0),
-                    arrowprops=dict(arrowstyle="->", color=col, lw=2.8))
-        ax.text(v[0] * 1.08, v[1] * 1.08, lbl, fontsize=13, color=col, fontweight="bold")
-    ax.set_title(title, fontsize=13); ax.grid(True, alpha=0.2)
-    ax.set_xlabel("x"); ax.set_ylabel("y")
+                    arrowprops=dict(arrowstyle="->", color=col, lw=3.2,
+                                    mutation_scale=20))
+        offset = 0.2
+        ax.text(v[0] + offset, v[1] + offset, lbl, fontsize=12, color=col,
+                fontweight="bold", bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=col, alpha=0.85))
+    ax.set_title(title, fontsize=13); ax.grid(False)
+    ax.set_xlabel("x (동쪽)"); ax.set_ylabel("y (북쪽)")
     ax.set_aspect("equal")
     return fig
 
+def plot_word_vectors():
+    """단어를 벡터로 표현 — AI 임베딩 시각화"""
+    words = {"🐱 고양이": [2.1, 1.8], "🐶 강아지": [2.5, 1.3], "🐘 코끼리": [1.2, 3.8],
+             "🦁 사자": [1.8, 3.2], "🍎 사과": [-2.0, 1.5], "🍊 오렌지": [-2.4, 1.0]}
+    fig, ax = plt.subplots(figsize=(9, 7))
+    ax.set_facecolor("#f8f8ff")
+    for i in range(-4, 5):
+        ax.axhline(i, color="#eee", lw=0.6); ax.axvline(i, color="#eee", lw=0.6)
+    colors_map = {"🐱 고양이":"#F44336","🐶 강아지":"#FF5722","🐘 코끼리":"#9C27B0",
+                  "🦁 사자":"#7B1FA2","🍎 사과":"#4CAF50","🍊 오렌지":"#8BC34A"}
+    groups = {"동물 🐾":["🐱 고양이","🐶 강아지","🐘 코끼리","🦁 사자"],
+              "과일 🍑":["🍎 사과","🍊 오렌지"]}
+    for grp_name, grp_words in groups.items():
+        pts = np.array([words[w] for w in grp_words])
+        cx, cy = pts.mean(axis=0)
+        circle = plt.Circle((cx, cy), 0.9, color="#e0e0e0", alpha=0.3, zorder=1)
+        ax.add_patch(circle)
+        ax.text(cx, cy - 1.2, grp_name, ha="center", fontsize=11, color="#555")
+    for word, pos in words.items():
+        col = colors_map[word]
+        ax.annotate("", xy=(pos[0], pos[1]), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle="->", color=col, lw=2.0, alpha=0.7))
+        ax.plot(pos[0], pos[1], "o", color=col, markersize=10, zorder=5)
+        ax.text(pos[0]+0.1, pos[1]+0.15, word, fontsize=11, color=col, fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=col, alpha=0.9))
+    ax.plot(0, 0, "k*", markersize=12, zorder=6); ax.text(0.1, -0.3, "원점(기준)", fontsize=10)
+    ax.set_xlim(-3.5, 3.5); ax.set_ylim(-1, 5)
+    ax.set_title("AI는 단어를 화살표(벡터)로 표현해요!\n비슷한 단어 = 비슷한 방향 🎯", fontsize=13)
+    ax.set_xlabel("의미 축 1"); ax.set_ylabel("의미 축 2")
+    ax.set_aspect("equal"); ax.axhline(0, color="#bbb", lw=1); ax.axvline(0, color="#bbb", lw=1)
+    return fig
+
+def plot_matrix_grid_visual(matrix, title="행렬"):
+    """행렬을 색깔 격자로 시각화"""
+    rows_m, cols_m = matrix.shape
+    fig, ax = plt.subplots(figsize=(max(5, cols_m * 1.2), max(4, rows_m * 1.1)))
+    vmax = max(abs(matrix.max()), abs(matrix.min()), 1)
+    im = ax.imshow(matrix, cmap="RdYlGn", vmin=-vmax, vmax=vmax, aspect="auto")
+    for i in range(rows_m):
+        for j in range(cols_m):
+            val = matrix[i, j]
+            tc = "white" if abs(val) > vmax * 0.6 else "black"
+            ax.text(j, i, f"{val:.1f}", ha="center", va="center", fontsize=16,
+                    fontweight="bold", color=tc)
+    ax.set_xticks(range(cols_m)); ax.set_yticks(range(rows_m))
+    ax.set_xticklabels([f"열{j+1}" for j in range(cols_m)], fontsize=11)
+    ax.set_yticklabels([f"행{i+1}" for i in range(rows_m)], fontsize=11)
+    ax.set_title(title, fontsize=13, pad=12)
+    plt.colorbar(im, ax=ax, shrink=0.7)
+    plt.tight_layout(); return fig
+
 def plot_matrix_transform(matrix, title="행렬 변환"):
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    points = np.array([[1,0],[0,1],[-1,0],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1],[0,0]]).T
-    transformed = matrix @ points
-    colors_pts = ["#F44336","#4CAF50","#1976D2","#FF9800","#9C27B0","#00BCD4","#E91E63","#8BC34A","#000"]
-    for ax, pts, ttl in zip(axes, [points, transformed], ["변환 전 (원본)", f"변환 후\n{matrix}"]):
-        ax.axhline(0, color="#bbb", lw=0.8); ax.axvline(0, color="#bbb", lw=0.8)
-        ax.scatter(pts[0], pts[1], c=colors_pts, s=120, zorder=5)
-        theta = np.linspace(0, 2*np.pi, 100)
-        unit = np.array([np.cos(theta), np.sin(theta)])
-        tunit = matrix @ unit if ttl != "변환 전 (원본)" else unit
-        ax.plot(tunit[0], tunit[1], color="#1976D2", lw=1.5, alpha=0.5, linestyle="--", label="단위원")
-        ax.set_title(ttl, fontsize=11); ax.grid(True, alpha=0.2)
-        ax.set_xlabel("x"); ax.set_ylabel("y"); ax.set_aspect("equal")
-        lim = max(np.max(np.abs(pts)) * 1.3, 1.5)
+    """도형(화살표 등)에 행렬 변환 적용 시각화"""
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
+    # 스마일 모양 포인트들
+    theta = np.linspace(0, 2*np.pi, 36)
+    circle = np.array([np.cos(theta), np.sin(theta)])
+    eye_l = np.array([[-0.4, -0.4, -0.3], [0.5, 0.4, 0.45]])
+    eye_r = np.array([[0.3, 0.4, 0.4], [0.5, 0.4, 0.45]])
+    mouth_t = np.linspace(-0.5, 0.5, 15)
+    mouth = np.array([mouth_t, -0.3 - 0.3 * (mouth_t**2 / 0.25)])
+    shapes = [(circle, "#1976D2", 2.5, "얼굴 원"),
+              (eye_l, "#333", 3, "왼쪽 눈"),
+              (eye_r, "#333", 3, "오른쪽 눈"),
+              (mouth, "#F44336", 2.5, "입")]
+    for ax, do_transform, ttl in zip(axes, [False, True],
+                                      ["변환 전 😊 (원본)", f"변환 후 😲 (행렬 곱)"]):
+        ax.set_facecolor("#f9f9f9")
+        for pts, col, lw, _ in shapes:
+            p = matrix @ pts if do_transform else pts
+            ax.plot(p[0], p[1], color=col, lw=lw)
+        ax.axhline(0, color="#ccc", lw=0.8); ax.axvline(0, color="#ccc", lw=0.8)
+        lim = 2.5
         ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim)
+        ax.set_title(ttl, fontsize=13); ax.set_aspect("equal")
+        ax.grid(True, alpha=0.15)
+        ax.set_xlabel("x"); ax.set_ylabel("y")
+    axes[1].text(0, -2.2,
+                 f"행렬 = [[{matrix[0,0]:.1f},{matrix[0,1]:.1f}],[{matrix[1,0]:.1f},{matrix[1,1]:.1f}]]",
+                 ha="center", fontsize=10, color="#555",
+                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#ccc"))
     plt.suptitle(title, fontsize=13); plt.tight_layout(); return fig
 
 def plot_eigenvectors(matrix):
@@ -1580,25 +1785,29 @@ def plot_eigenvectors(matrix):
         eigenvalues, eigenvectors = np.linalg.eig(matrix)
     except Exception:
         return None
-    fig, ax = plt.subplots(figsize=(7, 7))
-    ax.axhline(0, color="#bbb", lw=0.8); ax.axvline(0, color="#bbb", lw=0.8)
-    colors_ev = ["#F44336", "#1976D2", "#4CAF50"]
-    for i, (val, vec) in enumerate(zip(eigenvalues, eigenvectors.T)):
-        if np.iscomplex(val): continue
-        v = vec.real
-        col = colors_ev[i % len(colors_ev)]
-        ax.annotate("", xy=(v[0]*2, v[1]*2), xytext=(0,0),
-                    arrowprops=dict(arrowstyle="->", color=col, lw=3))
-        transformed = matrix @ (v * 2)
-        ax.annotate("", xy=(transformed[0], transformed[1]), xytext=(0,0),
-                    arrowprops=dict(arrowstyle="->", color=col, lw=1.5, linestyle="dashed", alpha=0.5))
-        ax.text(v[0]*2.1, v[1]*2.1, f"v{i+1}\n(λ={val.real:.2f})", fontsize=11, color=col, fontweight="bold")
-    lim = 3.5
-    ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim)
-    ax.set_title("고유벡터 (실선) vs 변환 후 (점선)", fontsize=12)
-    ax.grid(True, alpha=0.2); ax.set_aspect("equal")
-    ax.set_xlabel("x"); ax.set_ylabel("y")
-    return fig
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
+    colors_ev = ["#F44336", "#1976D2"]
+    for ax, do_transform, ttl in zip(axes, [False, True],
+                                      ["변환 전 (원래 화살표)", "변환 후 (같은 방향! 크기만 변함)"]):
+        for i in range(-4, 5):
+            ax.axhline(i, color="#f0f0f0", lw=0.5); ax.axvline(i, color="#f0f0f0", lw=0.5)
+        ax.axhline(0, color="#bbb", lw=1); ax.axvline(0, color="#bbb", lw=1)
+        for idx, (val, vec) in enumerate(zip(eigenvalues, eigenvectors.T)):
+            if np.iscomplex(val): continue
+            v = vec.real / (np.linalg.norm(vec.real) + 1e-9) * 2
+            p = matrix @ v if do_transform else v
+            col = colors_ev[idx % 2]
+            ax.annotate("", xy=(p[0], p[1]), xytext=(0, 0),
+                        arrowprops=dict(arrowstyle="->", color=col, lw=3.5, mutation_scale=22))
+            lbl = (f"v{idx+1}: 방향 그대로!\n크기만 {val.real:.1f}배"
+                   if do_transform else f"고유벡터 v{idx+1}")
+            ax.text(p[0] + 0.15, p[1] + 0.2, lbl, fontsize=10, color=col, fontweight="bold",
+                    bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=col, alpha=0.9))
+        ax.set_xlim(-4, 4); ax.set_ylim(-4, 4)
+        ax.set_title(ttl, fontsize=11); ax.set_aspect("equal")
+        ax.set_xlabel("x"); ax.set_ylabel("y")
+    plt.suptitle("🌟 고유벡터 = 행렬이 변환해도 방향이 안 바뀌는 특별한 화살표!", fontsize=13)
+    plt.tight_layout(); return fig
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  8장. 평균과 분산 (기술통계)
